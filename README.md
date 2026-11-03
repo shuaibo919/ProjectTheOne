@@ -19,7 +19,7 @@
 | 路径 | 远端 | 分支 |
 | --- | --- | --- |
 | `Engine` | `https://github.com/shuaibo919/godot.git` | 默认分支 |
-| `EngineAdaptor` | `https://github.com/godotengine/godot-cpp` | `4.3` |
+| `EngineAdaptor` | `https://github.com/godotengine/godot-cpp` | `master`（`api_version=4.7`） |
 | `Wiki` | `https://github.com/shuaibo919/ProjectAbyssWiki.git` | `projectx`（orphan，与旧文档无历史关系） |
 
 首次拉取：
@@ -37,7 +37,7 @@ git submodule update --init --recursive
 
 ## 构建提示
 
-引擎与绑定库的版本关系需要先确认：旧工程使用 Godot 4.7 fork + godot-cpp `4.3` 分支，两者 ABI 并不匹配。接入 `Source/` 前先决定绑定库版本（见 `Source/README.md`）。
+绑定库已升级到 godot-cpp `master`（支持 API 4.3–4.8），构建时指定 `api_version=4.7`。引擎 API 与官方 4.7 快照差异约 1.2KB，详见 `Source/README.md`。
 ## 附注
 
 - `Engine` 为 **浅克隆**（`--depth 1`），只有当前提交的历史。需要完整历史时执行：
