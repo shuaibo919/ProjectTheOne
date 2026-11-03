@@ -5,6 +5,7 @@ Project/export/
 Project/build/
 
 # ---- Native / engine build outputs ----
+Source/build_api/
 Source/build/
 *.dll
 *.pdb

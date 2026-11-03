@@ -4,7 +4,7 @@
 [submodule "EngineAdaptor"]
 	path = EngineAdaptor
 	url = https://github.com/godotengine/godot-cpp
-	branch = 4.3
+	branch = master
 [submodule "Wiki"]
 	path = Wiki
 	url = https://github.com/shuaibo919/ProjectAbyssWiki.git
