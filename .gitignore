@@ -13,15 +13,16 @@ Source/build/
 *.exp
 *.lib
 *.obj
+*.os
+EngineAdaptor/bin/
 *.o
 *.so
 *.dylib
 *.a
-
 # ---- Tools ----
+.sconsign.dblite
 __pycache__/
 *.pyc
-
 # ---- OS / editors ----
 Thumbs.db
 Desktop.ini
