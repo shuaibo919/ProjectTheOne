@@ -1,0 +1,20 @@
+# ProjectTheOne C++ style.
+# UE-inspired: tabs, Allman braces, PascalCase identifiers (no U/F/A/E prefixes).
+# Applied manually or by the editor; not enforced by a pre-commit hook.
+BasedOnStyle: LLVM
+Language: Cpp
+UseTab: Always
+TabWidth: 4
+IndentWidth: 4
+ColumnLimit: 120
+BreakBeforeBraces: Allman
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+PointerAlignment: Right
+ReferenceAlignment: Pointer
+AccessModifierOffset: -4
+IndentCaseLabels: false
+NamespaceIndentation: None
+SortIncludes: true
+IncludeBlocks: Preserve
