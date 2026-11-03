@@ -1,0 +1,11 @@
+[submodule "Engine"]
+	path = Engine
+	url = https://github.com/shuaibo919/godot.git
+[submodule "EngineAdaptor"]
+	path = EngineAdaptor
+	url = https://github.com/godotengine/godot-cpp
+	branch = 4.3
+[submodule "Wiki"]
+	path = Wiki
+	url = https://github.com/shuaibo919/ProjectAbyssWiki.git
+	branch = projectx

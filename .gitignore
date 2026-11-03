@@ -1,0 +1,32 @@
+# ---- Godot project ----
+Project/.godot/
+Project/.validation/
+Project/export/
+Project/build/
+
+# ---- Native / engine build outputs ----
+Source/build/
+*.dll
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.obj
+*.o
+*.so
+*.dylib
+*.a
+
+# ---- Tools ----
+__pycache__/
+*.pyc
+
+# ---- OS / editors ----
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vs/
+.idea/
+*.user
+*.tmp
+~*
