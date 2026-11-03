@@ -1,55 +1,62 @@
 # Source（C++ GDExtension）
 
-原生扩展的 C++ 实现。绑定库是 `../EngineAdaptor`（godot-cpp）。
+原生扩展实现。绑定库是 `../EngineAdaptor`（godot-cpp `master`），构建入口在仓库根 `SConstruct`。
 
-## 版本对应（2026-11-03）
+## 版本对应
 
 | 组件 | 版本 |
 | --- | --- |
 | `Engine` | Godot 4.7 beta 自定义 fork，提交 `3bfa50fd` |
-| `EngineAdaptor` | godot-cpp `master`，提交 `e103d34`，支持 `api_version=4.3 … 4.8` |
-| 目标 API | `4.7` —— godot-cpp 自带 `gdextension/extension_api-4-7.json` |
+| `EngineAdaptor` | godot-cpp `master`，提交 `e103d34` |
+| 目标 API | `4.7`（默认用引擎 dump 的 `Source/build_api/extension_api.json`，缺失时回退 godot-cpp 的 4.7 快照） |
 
-构建时必须显式传 `api_version=4.7`（godot-cpp 的 `api_version` 没有默认值，缺省会直接报错）。
+## 已实现
 
-## 为什么不再是 4.3
+| 文件 | 作用 |
+| --- | --- |
+| `src/register_types.cpp` | 扩展入口 `theone_library_init`，注册 `TheOneNode` |
+| `src/theone_node.h/.cpp` | 最小 `Node` 子类，方法 `get_build_info()`，用于证明管线打通 |
+| `../SConstruct` | 调用 `EngineAdaptor/SConstruct`，产物写入 `Project/bin/` |
+| `../Project/bin/theone.gdextension` | 扩展描述符，`entry_symbol = theone_library_init` |
 
-旧工程把 godot-cpp 固定在 `4.3` 分支，而引擎是 4.7 fork，ABI 不匹配。godot-cpp 现在按版本提供 API 快照（4.3–4.8），`master` 分支包含 4.7，因此升级到 `master` 并为构建指定 `api_version=4.7`。
+## 构建（已验证）
+
+```powershell
+.\Tools\Build\Build-Native.ps1              # 默认 template_debug，8 并发
+.\Tools\Build\Build-Native.ps1 -Target template_release
+```
+
+等价的直接命令：
+
+```powershell
+$env:VSLANG='1033'
+D:\VibeSpace\ProjectAbyss\.venv\Scripts\python.exe -m SCons platform=windows target=template_debug -j8
+```
+
+产物：`Project/bin/theone.windows.template_debug.x86_64.dll`（约 326 KB）。
+
+首次构建会连带编译 godot-cpp（约 960 个编译单元，8 并发约 2 分钟）；之后增量。
+
+## 验证（已验证）
+
+```powershell
+.\Tools\Build\Test-Extension.ps1
+```
+
+输出 `SMOKE_OK: TheOne native extension` 且退出码 0 表示：DLL 被引擎加载、`TheOneNode` 已注册、方法可调用。
+
+> 注意：引擎从 `.godot/extension_list.cfg` 读取扩展列表，该文件由编辑器扫描生成。全新克隆的项目必须先跑一次 `--headless --editor --quit`，否则 headless 运行不会加载扩展——`Test-Extension.ps1` 已包含这一步。
 
 ## 引擎 API 与官方 4.7 的差异
 
-本工程的引擎是自定义 fork，用引擎自身 dump 出来的 API 与 godot-cpp 官方的 4.7 快照对比：
-
 | 来源 | 体积 | 版本串 |
 | --- | ---: | --- |
-| 引擎 dump | 6,963,881 B | `4.7.0 beta custom_build` |
+| 引擎 dump（`Source/build_api/`） | 6,963,881 B | `4.7.0 beta custom_build` |
 | godot-cpp `extension_api-4-7.json` | 6,965,055 B | `4.7.0 stable official` |
 
-两者相差约 1.2 KB，说明 fork 没有改动 GDExtension 暴露面，默认使用官方快照即可。
-
-若后续 fork 改动了绑定接口，用引擎自身 dump 覆盖：
+差约 1.2 KB，说明 fork 未改动 GDExtension 暴露面。`Source/build_api/` 已忽略，可按引擎提交确定性重建：
 
 ```powershell
-# 在 Source/build_api 目录下执行，会生成 extension_api.json
+cd Source\build_api
 ..\..\Engine\bin\godot.windows.editor.x86_64.console.exe --headless --dump-extension-api
-# 构建时改用自定义 API
-scons api_version=4.7 custom_api_file=Source/build_api/extension_api.json ...
-```
-
-`Source/build_api/` 已在 `.gitignore` 中忽略：该文件可由引擎提交确定性重建，不入库。
-
-## 构建环境
-
-- 系统未安装 SCons；旧工程使用 `D:\VibeSpace\ProjectAbyss\.venv`（Python 3.14 + scons）。
-- 生成绑定与编译需要 MSVC 工具链（旧工程用它编译过引擎）。
-- 本目录尚无 `SConstruct`，接入前先写构建脚本（计划：复用 godot-cpp 的 SConstruct 约定）。
-
-## 规划中的结构
-
-```
-Source/
-├─ RegisterTypes.cpp      # 扩展入口
-├─ <Module>/              # 按模块分目录
-├─ build_api/             # 引擎 dump 的 API（忽略，可重建）
-└─ SConstruct             # 与 EngineAdaptor 的构建对接
 ```

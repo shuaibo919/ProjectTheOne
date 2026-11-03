@@ -32,8 +32,25 @@ git submodule update --init --recursive
 
 ## 当前状态
 
-- 本仓库只包含骨架：Godot 工程尚未初始化内容，C++ 扩展尚未接入构建。
+- 仓库骨架 + 三个子模块已就位；Godot 工程尚未加入游戏内容。
+- **原生扩展管线已打通并验证**（2026-11-03）：godot-cpp `master` + 引擎 4.7 fork，`TheOneNode` 注册成功。
 - 规范入口：[Wiki/Spec/001-Overview.md](Wiki/Spec/001-Overview.md)。
+
+## 构建与验证
+
+```powershell
+.\Tools\Build\Build-Native.ps1     # 构建 godot-cpp + 原生扩展（首次约 2 分钟）
+.\Tools\Build\Test-Extension.ps1   # 用引擎加载 DLL 并跑冒烟脚本
+```
+
+| 项 | 结果 |
+| --- | --- |
+| 构建产物 | `Project/bin/theone.windows.template_debug.x86_64.dll`（326,144 B） |
+| 链接的绑定库 | `EngineAdaptor/bin/libgodot-cpp.windows.template_debug.x86_64.lib` |
+| 冒烟输出 | `SMOKE_OK: TheOne native extension`，退出码 0 |
+| 工具链 | VS 2026（`E:\ProgramWares\vs2026`）+ SCons 4.10.1（旧工程 `.venv`） |
+
+脚本默认使用旧工程的 Python 环境；换机器时用 `-Python` 参数或 `THEONE_PYTHON` 环境变量指定。
 
 ## 构建提示
 
