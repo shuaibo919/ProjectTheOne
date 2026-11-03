@@ -1,4 +1,4 @@
-# ProjectX
+# ProjectTheOne
 
 水墨风武侠 ARPG 的新工程骨架。旧工程 `ProjectAbyss` 保留为素材与实现参考，按需移植。
 
@@ -20,12 +20,12 @@
 | --- | --- | --- |
 | `Engine` | `https://github.com/shuaibo919/godot.git` | 默认分支 |
 | `EngineAdaptor` | `https://github.com/godotengine/godot-cpp` | `master`（`api_version=4.7`） |
-| `Wiki` | `https://github.com/shuaibo919/ProjectAbyssWiki.git` | `projectx`（orphan，与旧文档无历史关系） |
+| `Wiki` | `https://github.com/shuaibo919/ProjectAbyssWiki.git` | `theone`（orphan，与旧文档无历史关系） |
 
 首次拉取：
 
 ```powershell
-git clone --recurse-submodules <this-repo-url> ProjectX
+git clone --recurse-submodules <this-repo-url> ProjectTheOne
 # 或已有仓库：
 git submodule update --init --recursive
 ```
@@ -45,6 +45,6 @@ git submodule update --init --recursive
 - 本机 SSH 的 22 端口不可用，需要推送子模块时走 SSH 443：
   ```powershell
   $env:GIT_SSH_COMMAND='ssh -p 443'
-  git -C Wiki push git@ssh.github.com:shuaibo919/ProjectAbyssWiki.git projectx
+  git -C Wiki push git@ssh.github.com:shuaibo919/ProjectAbyssWiki.git theone
   ```
-- `Wiki` 子模块跟踪 `projectx` 分支（孤立历史），不要合并 `master`。
+- `Wiki` 子模块跟踪 `theone` 分支（孤立历史），不要合并 `master`。
