@@ -20,6 +20,8 @@ EngineAdaptor/bin/
 *.dylib
 *.a
 # ---- Tools ----
+.venv/
+.build-temp/
 .sconsign.dblite
 __pycache__/
 *.pyc

@@ -9,8 +9,10 @@
 | `Engine` | Godot 4.7 beta 自定义 fork，提交 `3bfa50fd` |
 | `EngineAdaptor` | godot-cpp `master`，提交 `e103d34` |
 | 目标 API | `4.7`（默认用引擎 dump 的 `Source/build_api/extension_api.json`，缺失时回退 godot-cpp 的 4.7 快照） |
+| 构建 Python | 3.13.13（uv 托管，`.python-version`） |
+| SCons | 4.11.1（`uv.lock`） |
 
-## 已实现
+## 文件
 
 | 文件 | 作用 |
 | --- | --- |
@@ -22,20 +24,19 @@
 ## 构建（已验证）
 
 ```powershell
-.\Tools\Build\build-native.cmd              # 默认 template_debug，8 并发
+.\Tools\Build\setup-env.cmd      # 首次：uv sync 创建 .venv
+.\Tools\Build\build-native.cmd   # 默认 template_debug，8 并发
 .\Tools\Build\build-native.cmd -Target template_release
 ```
 
-等价的直接命令：
+等价的直接命令（需先 `setup-env.cmd`）：
 
 ```powershell
-$env:VSLANG='1033'
-D:\VibeSpace\ProjectAbyss\.venv\Scripts\python.exe -m SCons platform=windows target=template_debug -j8
+$env:TMP='.build-temp'; $env:TEMP='.build-temp'; $env:VSLANG='1033'
+.\.venv\Scripts\python.exe -m SCons platform=windows target=template_debug -j8
 ```
 
-产物：`Project/bin/theone.windows.template_debug.x86_64.dll`（约 326 KB）。
-
-首次构建会连带编译 godot-cpp（约 960 个编译单元，8 并发约 2 分钟）；之后增量。
+产物：`Project/bin/theone.windows.template_debug.x86_64.dll`（326,144 B）。首次构建连带编译 godot-cpp（约 960 个编译单元，8 并发约 2 分钟），之后增量。
 
 ## 验证（已验证）
 
@@ -43,9 +44,9 @@ D:\VibeSpace\ProjectAbyss\.venv\Scripts\python.exe -m SCons platform=windows tar
 .\Tools\Build\test-extension.cmd
 ```
 
-输出 `SMOKE_OK: TheOne native extension` 且退出码 0 表示：DLL 被引擎加载、`TheOneNode` 已注册、方法可调用。
+输出 `SMOKE_OK: TheOne native extension` 且退出码 0，表示 DLL 被引擎加载、`TheOneNode` 已注册、方法可调用。
 
-> 注意：引擎从 `.godot/extension_list.cfg` 读取扩展列表，该文件由编辑器扫描生成。全新克隆的项目必须先跑一次 `--headless --editor --quit`，否则 headless 运行不会加载扩展——`Test-Extension.ps1` 已包含这一步。
+> 引擎从 `.godot/extension_list.cfg` 读取扩展列表，该文件由编辑器扫描生成。全新克隆必须先跑一次 `--headless --editor --quit`，否则 headless 运行不加载扩展——`Test-Extension.ps1` 已内置这一步。
 
 ## 引擎 API 与官方 4.7 的差异
 

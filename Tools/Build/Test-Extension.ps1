@@ -6,22 +6,38 @@
     The engine reads .godot/extension_list.cfg at startup, which the editor generates.
     A project that was never opened therefore needs one scan pass first.
 
-.PARAMETER Engine
-    Path to the Godot executable. Defaults to $env:THEONE_ENGINE, then to the
-    legacy project's custom engine build.
+    Engine resolution order:
+      1. -Engine parameter
+      2. $env:THEONE_ENGINE
+      3. Engine/bin/ (a locally built engine)
+      4. the legacy ProjectAbyss engine binary (same 4.7 fork commit)
 
 .EXAMPLE
-    .\Tools\Build\Test-Extension.ps1
+    .\Tools\Build\test-extension.cmd
 #>
 param(
-    [string]$Engine = $(if ($env:THEONE_ENGINE) { $env:THEONE_ENGINE } else { 'D:\VibeSpace\ProjectAbyss\Engine\bin\godot.windows.editor.x86_64.console.exe' })
+    [string]$Engine
 )
 
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $project = Join-Path $repo 'Project'
 
-if (-not (Test-Path -LiteralPath $Engine)) { throw "Engine not found: $Engine (pass -Engine or set THEONE_ENGINE)" }
+if (-not $Engine) {
+    if ($env:THEONE_ENGINE) {
+        $Engine = $env:THEONE_ENGINE
+    } else {
+        $local = Join-Path $repo 'Engine\bin\godot.windows.editor.x86_64.console.exe'
+        $legacy = 'D:\VibeSpace\ProjectAbyss\Engine\bin\godot.windows.editor.x86_64.console.exe'
+        $Engine = if (Test-Path -LiteralPath $local) { $local } else { $legacy }
+    }
+}
+if (-not (Test-Path -LiteralPath $Engine)) {
+    throw "Engine not found: $Engine`nPass -Engine or set THEONE_ENGINE (or build Engine/ first)."
+}
+
+Write-Host "Engine  : $Engine"
+Write-Host "Project : $project"
 
 # 1. Ensure the extension list exists (editor scan, no window).
 & $Engine --headless --editor --quit --path $project | Out-Null
