@@ -22,8 +22,8 @@
 ## 构建（已验证）
 
 ```powershell
-.\Tools\Build\Build-Native.ps1              # 默认 template_debug，8 并发
-.\Tools\Build\Build-Native.ps1 -Target template_release
+.\Tools\Build\build-native.cmd              # 默认 template_debug，8 并发
+.\Tools\Build\build-native.cmd -Target template_release
 ```
 
 等价的直接命令：
@@ -40,7 +40,7 @@ D:\VibeSpace\ProjectAbyss\.venv\Scripts\python.exe -m SCons platform=windows tar
 ## 验证（已验证）
 
 ```powershell
-.\Tools\Build\Test-Extension.ps1
+.\Tools\Build\test-extension.cmd
 ```
 
 输出 `SMOKE_OK: TheOne native extension` 且退出码 0 表示：DLL 被引擎加载、`TheOneNode` 已注册、方法可调用。

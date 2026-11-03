@@ -39,8 +39,8 @@ git submodule update --init --recursive
 ## 构建与验证
 
 ```powershell
-.\Tools\Build\Build-Native.ps1     # 构建 godot-cpp + 原生扩展（首次约 2 分钟）
-.\Tools\Build\Test-Extension.ps1   # 用引擎加载 DLL 并跑冒烟脚本
+.\Tools\Build\build-native.cmd     # 构建 godot-cpp + 原生扩展（首次约 2 分钟）
+.\Tools\Build\test-extension.cmd   # 用引擎加载 DLL 并跑冒烟脚本
 ```
 
 | 项 | 结果 |
@@ -51,6 +51,9 @@ git submodule update --init --recursive
 | 工具链 | VS 2026（`E:\ProgramWares\vs2026`）+ SCons 4.10.1（旧工程 `.venv`） |
 
 脚本默认使用旧工程的 Python 环境；换机器时用 `-Python` 参数或 `THEONE_PYTHON` 环境变量指定。
+
+> 系统默认执行策略禁止运行未签名 `.ps1`。`.cmd` 包装器内部用 `-ExecutionPolicy Bypass` 调用，直接双击或命令行运行即可；要单独跑 `.ps1` 时用：
+> `powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Build\Test-Extension.ps1`
 
 ## 构建提示
 
