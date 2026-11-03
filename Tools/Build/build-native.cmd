@@ -1,4 +1,4 @@
 @echo off
-rem Build the native GDExtension. Extra args are forwarded to Build-Native.ps1.
+rem Build the native GDExtension.
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Build-Native.ps1" %*
 exit /b %ERRORLEVEL%

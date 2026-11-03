@@ -36,28 +36,30 @@ git submodule update --init --recursive
 - **原生扩展管线已打通并验证**（2026-11-03）：godot-cpp `master` + 引擎 4.7 fork，`TheOneNode` 注册成功。
 - 规范入口：[Wiki/Spec/001-Overview.md](Wiki/Spec/001-Overview.md)。
 
-## 构建与验证
+## 构建环境（uv 管理）
+
+工具链不依赖全局 Python，由 [uv](https://docs.astral.sh/uv/) 按 `pyproject.toml` + `uv.lock` 创建本地 `.venv`：
 
 ```powershell
-.\Tools\Build\build-native.cmd     # 构建 godot-cpp + 原生扩展（首次约 2 分钟）
-.\Tools\Build\test-extension.cmd   # 用引擎加载 DLL 并跑冒烟脚本
+.\Tools\Build\setup-env.cmd      # uv sync：Python 3.13.13 + SCons 4.11.1 -> .venv
+.\Tools\Build\build-native.cmd   # 编译 godot-cpp + 原生扩展
+.\Tools\Build\test-extension.cmd # 用引擎加载 DLL 并跑冒烟脚本
 ```
 
-| 项 | 结果 |
+| 项 | 值 |
 | --- | --- |
+| Python | 3.13.13（`.python-version`，uv 托管的独立解释器） |
+| SCons | 4.11.1（`uv.lock` 锁定） |
 | 构建产物 | `Project/bin/theone.windows.template_debug.x86_64.dll`（326,144 B） |
-| 链接的绑定库 | `EngineAdaptor/bin/libgodot-cpp.windows.template_debug.x86_64.lib` |
 | 冒烟输出 | `SMOKE_OK: TheOne native extension`，退出码 0 |
-| 工具链 | VS 2026（`E:\ProgramWares\vs2026`）+ SCons 4.10.1（旧工程 `.venv`） |
+| 工具链 | VS 2026（`E:\ProgramWares\vs2026`）+ Windows SDK |
 
-脚本默认使用旧工程的 Python 环境；换机器时用 `-Python` 参数或 `THEONE_PYTHON` 环境变量指定。
+`.venv/`、`.build-temp/`、`.sconsign.dblite` 均不入库；换机器只需 `setup-env.cmd`。
 
-> 系统默认执行策略禁止运行未签名 `.ps1`。`.cmd` 包装器内部用 `-ExecutionPolicy Bypass` 调用，直接双击或命令行运行即可；要单独跑 `.ps1` 时用：
-> `powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Build\Test-Extension.ps1`
-
-## 构建提示
-
-绑定库已升级到 godot-cpp `master`（支持 API 4.3–4.8），构建时指定 `api_version=4.7`。引擎 API 与官方 4.7 快照差异约 1.2KB，详见 `Source/README.md`。
+> **本机已知问题**：link.exe 使用默认用户 TEMP 时会报
+> `LNK1104: cannot open file ...\lnk{GUID}.tmp`。构建脚本已把 `TMP`/`TEMP` 重定向到仓库内 `.build-temp/`，不要去掉这一步。
+>
+> 引擎解析顺序：`-Engine` 参数 → `THEONE_ENGINE` → `Engine/bin/`（本地编译的引擎）→ 旧工程同版本二进制。
 ## 附注
 
 - `Engine` 为 **浅克隆**（`--depth 1`），只有当前提交的历史。需要完整历史时执行：

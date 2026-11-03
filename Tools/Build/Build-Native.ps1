@@ -1,10 +1,15 @@
 <#
 .SYNOPSIS
-    Build the native GDExtension (godot-cpp + Source).
+    Build the native GDExtension (godot-cpp + Source) with the project-local uv environment.
 
 .DESCRIPTION
-    Runs SCons from the repository root. godot-cpp itself is built on first run,
-    so the first invocation takes a few minutes; later runs are incremental.
+    Uses .venv created by `uv sync` (see Setup-Env.ps1). Two machine-specific details
+    are handled here:
+
+    * TMP/TEMP are redirected to .build-temp. link.exe fails with
+      "LNK1104: cannot open file ...\lnk{GUID}.tmp" when it uses the default user
+      temp directory on this machine.
+    * VSLANG=1033 keeps MSVC output in English (avoids GBK mojibake in logs).
 
 .PARAMETER Target
     template_debug (default) or template_release.
@@ -13,27 +18,39 @@
     Parallel compile jobs. Defaults to 8.
 
 .PARAMETER Python
-    Python interpreter that has SCons installed. Defaults to $env:THEONE_PYTHON,
-    then to the shared venv of the legacy project.
+    Python interpreter that has SCons. Defaults to $env:THEONE_PYTHON, then to the
+    repository .venv.
 
 .EXAMPLE
-    .\Tools\Build\Build-Native.ps1
-    .\Tools\Build\Build-Native.ps1 -Target template_release -Jobs 12
+    .\Tools\Build\build-native.cmd
+    .\Tools\Build\build-native.cmd -Target template_release -Jobs 12
 #>
 param(
     [ValidateSet('template_debug', 'template_release')]
     [string]$Target = 'template_debug',
     [int]$Jobs = 8,
-    [string]$Python = $(if ($env:THEONE_PYTHON) { $env:THEONE_PYTHON } else { 'D:\VibeSpace\ProjectAbyss\.venv\Scripts\python.exe' })
+    [string]$Python
 )
 
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 
-if (-not (Test-Path -LiteralPath $Python)) {
-    throw "Python with SCons not found: $Python (pass -Python or set THEONE_PYTHON)"
+if (-not $Python) {
+    $Python = if ($env:THEONE_PYTHON) { $env:THEONE_PYTHON } else { Join-Path $repo '.venv\Scripts\python.exe' }
 }
-$env:VSLANG = '1033'   # English MSVC output; avoids GBK mojibake
+if (-not (Test-Path -LiteralPath $Python)) {
+    throw "Python with SCons not found: $Python`nRun Tools\Build\setup-env.cmd (uv sync) first, or pass -Python / set THEONE_PYTHON."
+}
+
+$temp = Join-Path $repo '.build-temp'
+New-Item -ItemType Directory -Force -Path $temp | Out-Null
+$env:TMP = $temp
+$env:TEMP = $temp
+$env:VSLANG = '1033'
+
+Write-Host "Interpreter : $Python"
+Write-Host "Temp        : $temp"
+Write-Host "Target      : $Target (jobs=$Jobs)"
 
 Push-Location $repo
 try {
