@@ -19,9 +19,9 @@ env = SConscript("EngineAdaptor/SConstruct")
 env["ENV"]["VSLANG"] = "1033"
 
 env = env.Clone()
-env.Append(CPPPATH=["Source/src/"])
+env.Append(CPPPATH=["Source/src/", "Source/"])
 
-sources = Glob("Source/src/*.cpp")
+sources = Glob("Source/src/*.cpp") + Glob("Source/AncientBuilding/*/*.cpp")
 
 library = env.SharedLibrary(
     "Project/bin/theone{}{}".format(env["suffix"], env.subst("$SHLIBSUFFIX")),

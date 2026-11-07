@@ -7,6 +7,8 @@
 
 #include "theone_node.h"
 
+#include "AncientBuilding/bindings/module_key.h"
+
 using namespace godot;
 
 void initialize_theone_module(ModuleInitializationLevel p_level) {
@@ -14,6 +16,7 @@ void initialize_theone_module(ModuleInitializationLevel p_level) {
         return;
     }
     GDREGISTER_CLASS(TheOneNode);
+    GDREGISTER_CLASS(ModuleKey);
 }
 
 void uninitialize_theone_module(ModuleInitializationLevel p_level) {
