@@ -3,6 +3,7 @@ Project/.godot/
 Project/.validation/
 Project/export/
 Project/build/
+Project/Generated/
 
 # ---- Native / engine build outputs ----
 Source/build_api/
