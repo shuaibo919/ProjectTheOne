@@ -6,19 +6,26 @@
 
 | 路径 | 用途 |
 | --- | --- |
-| `Build/` | 原生扩展的构建与验证入口 |
+| `Build/` | 引擎与原生扩展的构建、启动、冒烟入口 |
+| `Test/` | 验收脚本 |
 
-## Build
+## Build（Git Bash 为主）
 
 | 脚本 | 作用 |
 | --- | --- |
-| `setup-env.cmd` | `uv sync`：按 `pyproject.toml` + `uv.lock` 创建 `.venv`（Python 3.13.13 + SCons 4.11.1） |
-| `build-native.cmd` | 编译 godot-cpp + `Source/`，产物到 `Project/bin/` |
-| `test-extension.cmd` | 用引擎加载 DLL，跑 `Project/Tests/smoke_extension.gd` |
+| `setup-env.sh` | `uv sync`：按 `pyproject.toml` + `uv.lock` 创建 `.venv`（Python 3.13.13 + SCons 4.11.1） |
+| `build-engine.sh` | 从 `Engine/` 子模块编译编辑器（`angle=no`，`-j$(nproc)`） |
+| `build-native.sh` | 编译 godot-cpp + `Source/`，产物到 `Project/bin/`（`TARGET=template_release` 可切换） |
+| `build-all.sh` | 引擎缺失先建引擎，再建扩展 |
+| `launch-editor.sh` | 用本地引擎打开 `Project/`（缺引擎会先构建） |
+| `run-game.sh` | 运行 Project（主场景尚未定义） |
+| `test-extension.sh` | 扩展列表扫描 + `Tests/smoke_extension.gd` |
 
-三个 `.cmd` 只是 `-ExecutionPolicy Bypass` 包装器，参数会原样转发给同名 `.ps1`。
+仓库根还有三个快捷方式：`./build.sh`（= build-all）、`./edit.sh`（= launch-editor）、`./test.sh`（= 验收）。
 
-构建脚本固定做两件事：把 `TMP`/`TEMP` 指向 `.build-temp/`（否则本机 link.exe 报 `LNK1104`），以及设置 `VSLANG=1033` 让 MSVC 输出英文。
+`*.ps1` / `*.cmd` 保留为 Windows 原生入口（`-ExecutionPolicy Bypass` 包装），但不再新增；新脚本一律用 Bash 写在 `Tools/` 下。
+
+所有构建脚本固定做两件事：把 `TMP`/`TEMP` 指向 `.build-temp/`（否则 link.exe 报 `LNK1104`），以及设置 `VSLANG=1033` 让 MSVC 输出英文。并发可用 `JOBS=24 ./build.sh` 覆盖。
 
 ## 规则
 

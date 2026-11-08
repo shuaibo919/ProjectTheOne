@@ -14,6 +14,7 @@
 *.exe binary
 
 *.cmd text eol=crlf
+*.sh text eol=lf
 *.bat text eol=crlf
 
 # 大于 5MB 的二进制建议走 Git LFS（见 Wiki/Spec/001-Overview.md 的资产规则）

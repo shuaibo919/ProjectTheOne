@@ -21,6 +21,7 @@ EngineAdaptor/bin/
 *.dylib
 *.a
 # ---- Tools ----
+.appdata/
 .venv/
 .build-temp/
 .sconsign.dblite

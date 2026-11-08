@@ -18,6 +18,12 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
+# Isolate user data inside the repo: the engine crashes when it cannot write %APPDATA%.
+$appDataRoot = Join-Path $repo '.appdata'
+New-Item -ItemType Directory -Force -Path $appDataRoot | Out-Null
+$env:APPDATA = $appDataRoot
+$env:LOCALAPPDATA = $appDataRoot
+# THEONE_APPDATA_MARK
 $project = Join-Path $repo 'Project'
 $cli = 'res://addons/ancient_building/cli/main.gd'
 $scenePath = 'res://Generated/AncientBuilding/Samples/DA_House_A.tscn'
