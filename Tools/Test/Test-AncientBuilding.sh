@@ -11,7 +11,7 @@ mkdir -p "$REPO/.appdata"
 export APPDATA="$APP_ROOT"
 export LOCALAPPDATA="$APP_ROOT"
 # THEONE_APPDATA_MARK
-ENGINE="${THEONE_ENGINE:-$REPO/Engine/bin/godot.windows.editor.x86_64.exe}"
+ENGINE="${THEONE_ENGINE:-$REPO/Engine/bin/godot.windows.editor.x86_64.console.exe}"
 PROJECT="$REPO/Project"
 CLI="res://addons/ancient_building/cli/main.gd"
 PRESET="res://addons/ancient_building/resources/presets/DA_House_A.json"
@@ -50,7 +50,7 @@ if [[ ! -f "$ENGINE" ]]; then
 fi
 
 # Extension list must exist before headless runs on a fresh clone.
-"$ENGINE" --headless --editor --quit --path "$PROJECT" >/dev/null 2>&1
+"$ENGINE" --headless --editor --quit --path "$PROJECT" >/dev/null 2>&1 || true
 
 for tool in test_module_key test_layout test_roof test_batch; do
 	check "unit check $tool.gd" "$ENGINE" --headless --path "$PROJECT" --script "res://Tests/Checks/$tool.gd" >/dev/null 2>&1

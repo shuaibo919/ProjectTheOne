@@ -10,7 +10,7 @@ mkdir -p "$REPO/.appdata"
 export APPDATA="$APP_ROOT"
 export LOCALAPPDATA="$APP_ROOT"
 # THEONE_APPDATA_MARK
-ENGINE="${THEONE_ENGINE:-$REPO/Engine/bin/godot.windows.editor.x86_64.exe}"
+ENGINE="${THEONE_ENGINE:-$REPO/Engine/bin/godot.windows.editor.x86_64.console.exe}"
 
 if [[ ! -f "$ENGINE" ]]; then
 	echo "engine not built: $ENGINE" >&2
@@ -19,6 +19,6 @@ if [[ ! -f "$ENGINE" ]]; then
 fi
 
 # The engine reads .godot/extension_list.cfg; generate it on a fresh clone.
-"$ENGINE" --headless --editor --quit --path "$REPO/Project" >/dev/null
+"$ENGINE" --headless --editor --quit --path "$REPO/Project" >/dev/null 2>&1 || true
 
 "$ENGINE" --headless --path "$REPO/Project" --script res://Tests/smoke_extension.gd

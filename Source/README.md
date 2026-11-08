@@ -1,7 +1,17 @@
 # Source（C++ GDExtension）
 
-原生扩展实现。绑定库是 `../EngineAdaptor`（godot-cpp `master`），构建入口在仓库根 `SConstruct`。
+每个 `Source/<Module>/` 是一个独立的 GDExtension：独立 DLL、独立 `.gdextension`、独立入口符号。
 编辑器与扩展都从本仓库源码构建，不依赖旧工程二进制。
+
+## 模块
+
+| 模块 | 目录 | 入口符号 | 产物 | 注册的类 |
+| --- | --- | --- | --- | --- |
+| `theone_core` | `Core/` | `theone_core_library_init` | `theone_core.<suffix>.dll` | `TheOneNode`、`ModuleKey` |
+| `ancient_building` | `AncientBuilding/` | `ancient_building_library_init` | `ancient_building.<suffix>.dll` | `AncientBuildingModule`（M1 占位） |
+
+`Common/` 是共享纯 C++ 工具（SHA-1、规范化 JSON），编进每个模块；**不得**放 Godot 类。
+描述符在 `Project/bin/<module>.gdextension`，`entry_symbol` 必须与实现一致。
 
 ## 版本对应
 
@@ -13,22 +23,12 @@
 | 构建 Python | 3.13.13（uv 托管，`.python-version`） |
 | SCons | 4.11.1（`uv.lock`） |
 
-## 文件
-
-| 文件 | 作用 |
-| --- | --- |
-| `src/register_types.cpp` | 扩展入口 `theone_library_init`，注册 `TheOneNode` / `ModuleKey` |
-| `src/theone_node.h/.cpp` | 最小 `Node` 子类，方法 `get_build_info()`，用于证明管线打通 |
-| `AncientBuilding/` | 古建模块化重构的原生部分（M1：SHA-1、规范化 JSON、`ModuleKey`） |
-| `../SConstruct` | 调用 `EngineAdaptor/SConstruct`，产物写入 `Project/bin/` |
-| `../Project/bin/theone.gdextension` | 扩展描述符，`entry_symbol = theone_library_init` |
-
 ## 构建（Git Bash）
 
 ```bash
 ./Tools/Build/setup-env.sh      # 首次：uv sync
 ./Tools/Build/build-engine.sh   # 首次或引擎升级后：编译 Engine/
-./Tools/Build/build-native.sh   # 编译 godot-cpp + Source/
+./Tools/Build/build-native.sh   # 编译 godot-cpp + 全部扩展模块
 ```
 
 等价的直接命令：
@@ -43,19 +43,26 @@ cd "$REPO"
 
 产物：
 
-- 引擎：`Engine/bin/godot.windows.editor.x86_64.exe`（GUI）与 `.console.exe`（带 stdout）
-- 扩展：`Project/bin/theone.windows.template_debug.x86_64.dll`
+- 引擎：`Engine/bin/godot.windows.editor.x86_64.exe`（GUI）与 `.console.exe`（headless 用）
+- 扩展：`Project/bin/theone_core...dll`、`Project/bin/ancient_building...dll`
 
-构建脚本会重定向 `TMP`/`TEMP`（否则本机 link.exe 报 `LNK1104`）并设置 `VSLANG=1033`。
+构建脚本会重定向 `TMP`/`TEMP`（否则 link.exe 报 `LNK1104`）并设置 `VSLANG=1033`。
+
+## 新增一个扩展模块
+
+1. 建 `Source/<Module>/`，写 `register_types.h/.cpp`，入口符号 `<module>_library_init`；
+2. 建 `Project/bin/<module>.gdextension`，`entry_symbol` 与入口一致；
+3. 在根 `SConstruct` 的 `modules` 列表加 `("<module>", Glob("Source/<Module>/*.cpp"))`；
+4. `./Tools/Build/build-native.sh`，然后在编辑器里扫描一次扩展列表。
 
 ## 验证
 
 ```bash
-./Tools/Build/test-extension.sh   # 扩展列表扫描 + 冒烟脚本
+./Tools/Build/test-extension.sh   # 两个模块的类都应存在
 ./test.sh                         # AncientBuilding 全量验收（M1-M5）
 ```
 
-输出 `SMOKE_OK: TheOne native extension` 且退出码 0，表示 DLL 被引擎加载、`TheOneNode` 已注册、方法可调用。
+冒烟输出 `SMOKE_OK: core=... / ancient_building=...` 表示两个独立扩展都加载成功。
 
 > 引擎从 `.godot/extension_list.cfg` 读取扩展列表，该文件由编辑器扫描生成。全新克隆必须先跑一次 `--headless --editor --quit`，`test-extension.sh` 已内置。
 

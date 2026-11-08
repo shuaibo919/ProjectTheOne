@@ -1,4 +1,4 @@
-#include "AncientBuilding/core/sha1.h"
+#include "Common/sha1.h"
 
 #include <cstdint>
 #include <vector>

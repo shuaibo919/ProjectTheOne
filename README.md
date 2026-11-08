@@ -17,6 +17,6 @@
 | `./edit.sh` | `Tools/Build/launch-editor.sh` |
 | `./test.sh` | `Tools/Test/Test-AncientBuilding.sh` |
 
-产物：`Engine/bin/godot.windows.editor.x86_64.exe`、`Project/bin/theone.windows.template_debug.x86_64.dll`。
+产物：`Engine/bin/godot.windows.editor.x86_64.exe`；扩展按模块拆分为 `Project/bin/theone_core...dll` 与 `Project/bin/ancient_building...dll`。
 
 规范与计划：[Wiki/Spec/001-Overview.md](Wiki/Spec/001-Overview.md)、[Wiki/Temp/008-AncientBuilding.md](Wiki/Temp/008-AncientBuilding.md)。

@@ -1,10 +1,10 @@
-#include "AncientBuilding/bindings/module_key.h"
+#include "Core/module_key.h"
 
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 
-#include "AncientBuilding/core/canonical.h"
-#include "AncientBuilding/core/sha1.h"
+#include "Common/canonical.h"
+#include "Common/sha1.h"
 
 using namespace godot;
 

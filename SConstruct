@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """ProjectTheOne GDExtension build.
 
-Prefers the API dumped from our own engine fork (Source/build_api/extension_api.json,
-regenerate with `godot --headless --dump-extension-api`). Falls back to godot-cpp's
-bundled 4.7 snapshot when the dump is absent.
+Each directory under Source/ (except Common) becomes its own extension library:
+its own DLL, its own .gdextension descriptor and its own entry symbol.
+Common/ is shared source compiled into every module.
 """
 import os
 
@@ -19,13 +19,17 @@ env = SConscript("EngineAdaptor/SConstruct")
 env["ENV"]["VSLANG"] = "1033"
 
 env = env.Clone()
-env.Append(CPPPATH=["Source/src/", "Source/"])
+env.Append(CPPPATH=["Source/"])
 
-sources = Glob("Source/src/*.cpp") + Glob("Source/AncientBuilding/*/*.cpp")
+common_sources = Glob("Source/Common/*.cpp")
+modules = [
+    ("theone_core", Glob("Source/Core/*.cpp")),
+    ("ancient_building", Glob("Source/AncientBuilding/*.cpp")),
+]
 
-library = env.SharedLibrary(
-    "Project/bin/theone{}{}".format(env["suffix"], env.subst("$SHLIBSUFFIX")),
-    source=sources,
-)
-
-Default(library)
+for name, sources in modules:
+    library = env.SharedLibrary(
+        "Project/bin/{}{}{}".format(name, env["suffix"], env.subst("$SHLIBSUFFIX")),
+        source=sources + common_sources,
+    )
+    Default(library)

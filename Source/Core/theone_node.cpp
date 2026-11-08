@@ -1,4 +1,4 @@
-#include "theone_node.h"
+#include "Core/theone_node.h"
 
 #include <godot_cpp/core/class_db.hpp>
 

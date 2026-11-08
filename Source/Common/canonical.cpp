@@ -1,4 +1,4 @@
-#include "AncientBuilding/core/canonical.h"
+#include "Common/canonical.h"
 
 #include <algorithm>
 #include <utility>

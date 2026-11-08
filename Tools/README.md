@@ -15,11 +15,11 @@
 | --- | --- |
 | `setup-env.sh` | `uv sync`：按 `pyproject.toml` + `uv.lock` 创建 `.venv`（Python 3.13.13 + SCons 4.11.1） |
 | `build-engine.sh` | 从 `Engine/` 子模块编译编辑器（`angle=no`，`-j$(nproc)`） |
-| `build-native.sh` | 编译 godot-cpp + `Source/`，产物到 `Project/bin/`（`TARGET=template_release` 可切换） |
+| `build-native.sh` | 编译 godot-cpp + 全部扩展模块，产物到 `Project/bin/`（`TARGET=template_release` 可切换） |
 | `build-all.sh` | 引擎缺失先建引擎，再建扩展 |
 | `launch-editor.sh` | 用本地引擎打开 `Project/`（缺引擎会先构建） |
 | `run-game.sh` | 运行 Project（主场景尚未定义） |
-| `test-extension.sh` | 扩展列表扫描 + `Tests/smoke_extension.gd` |
+| `test-extension.sh` | 扩展列表扫描 + `Tests/smoke_extension.gd`（校验 `theone_core` 与 `ancient_building` 两个模块） |
 
 仓库根还有三个快捷方式：`./build.sh`（= build-all）、`./edit.sh`（= launch-editor）、`./test.sh`（= 验收）。
 

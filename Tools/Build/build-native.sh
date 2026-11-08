@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the GDExtension (godot-cpp + Source) against the local engine build.
+# Build the GDExtension modules (godot-cpp + Source) against the local engine build.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -19,8 +19,10 @@ export TMP="$(cygpath -w "$REPO/.build-temp")"
 export TEMP="$TMP"
 
 cd "$REPO"
-echo "Building native extension: windows / $TARGET, -j$JOBS"
+echo "Building native extensions: windows / $TARGET, -j$JOBS"
 "$PY" -m SCons platform=windows "target=$TARGET" -j"$JOBS" "$@"
 
 echo
-echo "Extension binary: $REPO/Project/bin/theone.windows.$TARGET.x86_64.dll"
+echo "Extension binaries:"
+echo "  $REPO/Project/bin/theone_core.windows.$TARGET.x86_64.dll"
+echo "  $REPO/Project/bin/ancient_building.windows.$TARGET.x86_64.dll"

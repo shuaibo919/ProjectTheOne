@@ -6,7 +6,7 @@
 
 | 检查 | 脚本 | 证明什么 | 运行 | 层 | 保留理由 |
 | --- | --- | --- | --- | --- | --- |
-| 扩展冒烟 | `Tests/smoke_extension.gd` | DLL 加载、`TheOneNode` 注册、方法可调用 | `Tools\Build\test-extension.cmd` | L1 | 原生管线回归 |
+| 扩展冒烟 | `Tests/smoke_extension.gd` | `theone_core` 与 `ancient_building` 两个扩展加载、三个类注册 | `Tools/Build/test-extension.sh` | L1 | 原生管线回归 |
 | 模块键与目录 | `Tests/Checks/test_module_key.gd` | SHA-1/规范化稳定、量化规则、策略与尺寸关系、71 模块目录完整 | `Test-AncientBuilding.ps1` | L1 | AncientBuilding M1 |
 | 宽度求解与装配 | `Tests/Checks/test_layout.gd` | S/R/A/P 求解、实例展开、共享网格、布局哈希 | 同上 | L1 | M2 |
 | 屋顶模块 | `Tests/Checks/test_roof.gd` | P 类随宽度重建、R 类复用、屋面/脊/瓦网格尺寸 | 同上 | L1 | M3 |
