@@ -7,22 +7,25 @@
 | 检查 | 脚本 | 证明什么 | 运行 | 层 | 保留理由 |
 | --- | --- | --- | --- | --- | --- |
 | 扩展冒烟 | `Tests/smoke_extension.gd` | DLL 加载、`TheOneNode` 注册、方法可调用 | `Tools\Build\test-extension.cmd` | L1 | 原生管线回归 |
-| 模块键与目录 | `Tests/Checks/test_module_key.gd` | SHA-1/规范化稳定、量化规则、S/R/A/P 策略与尺寸关系、71 模块目录完整 | 见下 | L1 | AncientBuilding M1 验收 |
+| 模块键与目录 | `Tests/Checks/test_module_key.gd` | SHA-1/规范化稳定、量化规则、策略与尺寸关系、71 模块目录完整 | `Test-AncientBuilding.ps1` | L1 | AncientBuilding M1 |
+| 宽度求解与装配 | `Tests/Checks/test_layout.gd` | S/R/A/P 求解、实例展开、共享网格、布局哈希 | 同上 | L1 | M2 |
+| 屋顶模块 | `Tests/Checks/test_roof.gd` | P 类随宽度重建、R 类复用、屋面/脊/瓦网格尺寸 | 同上 | L1 | M3 |
+| MultiMesh 与磁盘缓存 | `Tests/Checks/test_batch.gd` | 转换/还原、磁盘命中、往返哈希一致 | 同上 | L1 | M4 |
+| CLI 全流程 | `Tools/Test/Test-AncientBuilding.ps1` | build/bake/convert/revert/inspect 端到端 | `Tools\Test\Test-AncientBuilding.ps1` | L2 | M5 |
 
 ## 运行
 
 ```powershell
-# 首次或换机器：先让引擎生成扩展列表
-D:\VibeSpace\ProjectAbyss\Engine\bin\godot.windows.editor.x86_64.console.exe `
-  --headless --editor --quit --path D:\VibeSpace\ProjectTheOne\Project
+# 一键验收（含扩展列表初始化）
+.\Tools\Test\Test-AncientBuilding.ps1
 
-# 模块键检查
+# 单个检查
 D:\VibeSpace\ProjectAbyss\Engine\bin\godot.windows.editor.x86_64.console.exe `
   --headless --path D:\VibeSpace\ProjectTheOne\Project `
-  --script res://Tests/Checks/test_module_key.gd
+  --script res://Tests/Checks/test_layout.gd
 ```
 
-通过时输出 `PASS: module key and registry (N checks)` 且退出码 0。
+通过时输出 `PASS: ...` 且退出码 0；CLI 流程通过时输出 `ANCIENTBUILDING CHECK PASSED`。
 
 ## 约定
 
