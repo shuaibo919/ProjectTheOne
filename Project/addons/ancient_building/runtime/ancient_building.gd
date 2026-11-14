@@ -1,3 +1,4 @@
+@tool
 class_name AncientBuilding
 extends Node3D
 ## 运行时建筑节点：引用 BuildingAssembly，自身不重新求解。
@@ -29,6 +30,11 @@ const AssemblyRender := preload("res://addons/ancient_building/runtime/assembly_
 var _batch: Node3D
 var _local_root: Node3D
 var _reconfiguring := false
+
+
+func _init() -> void:
+	# Batch groups are top-level world-space MultiMeshes; Node3D notifications are off by default.
+	set_notify_transform(true)
 
 
 func _ready() -> void:

@@ -1,3 +1,4 @@
+@tool
 class_name AncientBuildingMaterialProfile
 extends Resource
 ## 共享材质配置：同一 ModuleKey + material_set + surface 的实例共用一个 profile。

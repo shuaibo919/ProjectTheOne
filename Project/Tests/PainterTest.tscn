@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://drdq6onpgxpua"]
+
+[ext_resource type="Script" uid="uid://b72nn13rm3aew" path="res://addons/ancient_building/runtime/ancient_building_batch.gd" id="1_33wcs"]
+[ext_resource type="Script" uid="uid://b44w7gkonqkm1" path="res://addons/ancient_building/runtime/ancient_building.gd" id="2_runuw"]
+[ext_resource type="Resource" uid="uid://b15lisgwcg3pm" path="res://Generated/AncientBuilding/Assemblies/asm1_7a101682bf507c87.tres" id="3_dui4e"]
+
+[node name="PainterTest" type="Node3D" unique_id=2052137989]
+
+[node name="AncientBuildingBatch" type="Node3D" parent="." unique_id=2106950064]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.339904, 0, 0)
+script = ExtResource("1_33wcs")
+chunk_size = 64.0
+
+[node name="DA_House_A" type="Node3D" parent="AncientBuildingBatch" unique_id=482185427]
+script = ExtResource("2_runuw")
+assembly = ExtResource("3_dui4e")
+
+[node name="DA_House_A2" type="Node3D" parent="AncientBuildingBatch" unique_id=585619077]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.308033, -0.25406528, 0)
+script = ExtResource("2_runuw")
+assembly = ExtResource("3_dui4e")

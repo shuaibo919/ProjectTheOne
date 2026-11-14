@@ -187,6 +187,8 @@ AncientBuildingBatch  (chunk_size)
 - `AncientBuilding` 直接引用 assembly；没有祖先 batch 时在自己本地生成 MultiMesh 组，便于单栋/编辑器使用。
 - `AncientBuildingBatch` 按 `(chunk, mesh_key, material_profile, cast_shadow)` 跨建筑合并，Mesh 与材质 profile 共享；当前固定 LOD0。
 - Dock 的 **烘焙装配体** 与 CLI `assembly` 使用同一个 `AssemblyBaker`；默认输出 `Generated/AncientBuilding/Assemblies/`。
+- Dock 的 **导出到场景** 会烘焙当前描述并把节点直接写进当前编辑场景：复用/创建 `AncientBuildingBatch`，新建 `AncientBuilding` 并引用 assembly；选中的是 `AncientBuilding` 时只更新它的 assembly。操作进入 EditorUndoRedo，场景需手动保存。导出后会自动选中新节点，要新增第二栋请先选中 Batch/根节点或清空选择。
+- 运行时节点带 `@tool` 预览：编辑器里会生成临时 MultiMesh（owner 为空，不写入场景），打开场景即可看到；运行游戏后由同一套批次逻辑重建。导出场景只保存 Batch、AncientBuilding 和 assembly 引用。移动/旋转/缩放会通过 `set_notify_transform(true)` 触发预览重建。
 - 新增/删除/移动/改 assembly 时整批重建；这是 P3 的正确性优先实现，逐建筑增量索引后续再做。
 - assembly `.tres` 保留完整 `source_descriptor`，可在编辑器中重建；打包阶段可批量转 `.res`。
 - 当前没有 LOD、碰撞/导航；`bake` 的旧式场景与 `Convert` 仍然独立可用。

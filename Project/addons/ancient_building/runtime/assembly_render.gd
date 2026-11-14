@@ -1,3 +1,4 @@
+@tool
 extends RefCounted
 ## 把一组 (mesh, material, entries) 转成 MultiMeshInstance3D。
 ## entries 每项：{"transform": Transform3D, "seed": float}。

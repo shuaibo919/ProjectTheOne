@@ -4,13 +4,13 @@
   "resolution": 1024,
   "description": "AncientBuilding original procedural PBR. Wood grain follows V. BC sRGB; Normal OpenGL +Y; ORM linear R=AO,G=roughness,B=metallic. tile_size_m is physical U,V coverage.",
   "families": {
-    "Wood": {"tile_size_m": [0.42, 2.4], "reference_color_srgb": "#8b6b4d", "roughness": 0.82, "height_scale": 1.0},
-    "WoodEnd": {"tile_size_m": [0.42, 0.42], "reference_color_srgb": "#8b6b4d", "roughness": 0.87, "height_scale": 1.0},
-    "Tile": {"tile_size_m": [0.6, 0.6], "reference_color_srgb": "#777b77", "roughness": 0.83, "height_scale": 1.0},
-    "Plaster": {"tile_size_m": [1.4, 1.4], "reference_color_srgb": "#c7bfae", "roughness": 0.93, "height_scale": 1.0},
-    "Earth": {"tile_size_m": [1.6, 1.2], "reference_color_srgb": "#ad9269", "roughness": 0.96, "height_scale": 1.0},
-    "Stone": {"tile_size_m": [0.9, 0.9], "reference_color_srgb": "#96928a", "roughness": 0.88, "height_scale": 1.0},
-    "Reed": {"tile_size_m": [0.324, 0.54], "reference_color_srgb": "#ab956e", "roughness": 0.90, "height_scale": 1.0},
-    "Thatch": {"tile_size_m": [0.9, 1.2], "reference_color_srgb": "#9f8b5e", "roughness": 0.94, "height_scale": 1.0}
+	"Wood": {"tile_size_m": [0.42, 2.4], "reference_color_srgb": "#8b6b4d", "roughness": 0.82, "height_scale": 1.0},
+	"WoodEnd": {"tile_size_m": [0.42, 0.42], "reference_color_srgb": "#8b6b4d", "roughness": 0.87, "height_scale": 1.0},
+	"Tile": {"tile_size_m": [0.6, 0.6], "reference_color_srgb": "#777b77", "roughness": 0.83, "height_scale": 1.0},
+	"Plaster": {"tile_size_m": [1.4, 1.4], "reference_color_srgb": "#c7bfae", "roughness": 0.93, "height_scale": 1.0},
+	"Earth": {"tile_size_m": [1.6, 1.2], "reference_color_srgb": "#ad9269", "roughness": 0.96, "height_scale": 1.0},
+	"Stone": {"tile_size_m": [0.9, 0.9], "reference_color_srgb": "#96928a", "roughness": 0.88, "height_scale": 1.0},
+	"Reed": {"tile_size_m": [0.324, 0.54], "reference_color_srgb": "#ab956e", "roughness": 0.90, "height_scale": 1.0},
+	"Thatch": {"tile_size_m": [0.9, 1.2], "reference_color_srgb": "#9f8b5e", "roughness": 0.94, "height_scale": 1.0}
   }
 }

@@ -11,6 +11,8 @@ const Assembler := preload("res://addons/ancient_building/core/assembler.gd")
 const Materials := preload("res://addons/ancient_building/core/material_library.gd")
 const Batcher := preload("res://addons/ancient_building/core/scene_batcher.gd")
 const AssemblyBaker := preload("res://addons/ancient_building/core/assembly_baker.gd")
+const AncientBuildingScript := preload("res://addons/ancient_building/runtime/ancient_building.gd")
+const AncientBuildingBatchScript := preload("res://addons/ancient_building/runtime/ancient_building_batch.gd")
 const Preview := preload("res://addons/ancient_building/core/preview_builder.gd")
 const ModuleMesh := preload("res://addons/ancient_building/core/module_mesh.gd")
 const Variation := preload("res://addons/ancient_building/core/building_variation.gd")
@@ -115,6 +117,9 @@ func _build_ui() -> void:
 	actions.add_child(_make_button("构建预览", _rebuild_preview))
 	actions.add_child(_make_button("烘焙场景", _bake_scene))
 	actions.add_child(_make_button("烘焙装配体", _bake_assembly))
+	var export_button := _make_button("导出到场景", _export_to_scene)
+	export_button.tooltip_text = "烘焙当前构建，并在当前场景中创建/复用 AncientBuildingBatch，再挂一个 AncientBuilding"
+	actions.add_child(export_button)
 	actions.add_child(_make_button("Convert", _convert_preview))
 	actions.add_child(_make_button("Revert", _rebuild_preview))
 	actions.add_child(_make_button("Stats", _update_stats))
@@ -672,6 +677,8 @@ func _process(_delta: float) -> void:
 			_bake_scene()
 		elif action == "assembly":
 			_bake_assembly()
+		elif action == "export":
+			_export_to_scene()
 		elif action == "convert":
 			_convert_preview()
 	_main_slice_peak_ms = maxf(_main_slice_peak_ms, (Time.get_ticks_usec() - started) / 1000.0)
@@ -851,7 +858,7 @@ func _bake_scene() -> void:
 func _bake_assembly() -> void:
 	if not _ready_for_action("assembly"):
 		return
-	var result := AssemblyBaker.bake(_descriptor.duplicate(true), {"source_path": _preset_file})
+	var result := _bake_assembly_result()
 	if result.has("error"):
 		_set_status("装配体失败: " + String(result["error"]))
 		return
@@ -860,6 +867,183 @@ func _bake_assembly() -> void:
 		int(result.get("instances", 0)),
 		int(result.get("unique_meshes", 0)),
 	])
+
+
+func _bake_assembly_result() -> Dictionary:
+	return AssemblyBaker.bake(_descriptor.duplicate(true), {"source_path": _preset_file})
+
+
+func _export_to_scene() -> void:
+	if not _ready_for_action("export"):
+		return
+	var scene_root := EditorInterface.get_edited_scene_root()
+	if scene_root == null:
+		_set_status("导出失败：没有打开的可编辑场景")
+		return
+	var result := _bake_assembly_result()
+	if result.has("error"):
+		_set_status("导出失败（装配体）: " + String(result["error"]))
+		return
+	var assembly_path := String(result.get("assembly", ""))
+	var assembly := ResourceLoader.load(assembly_path) as Resource
+	if assembly == null:
+		_set_status("导出失败：无法加载装配体 " + assembly_path)
+		return
+
+	var selected := _selected_node()
+	if selected != null and _has_script(selected, AncientBuildingScript):
+		_update_exported_building(selected, assembly)
+		_set_status("已更新当前选中的 AncientBuilding：%s（Ctrl+S 保存）" % assembly_path)
+		return
+
+	var batch := _resolve_export_batch(scene_root, selected)
+	var created_batch := false
+	if batch == null:
+		batch = AncientBuildingBatchScript.new()
+		batch.name = _unique_child_name(scene_root, "AncientBuildingBatch")
+		batch.chunk_size = 64.0
+		created_batch = true
+
+	var building = AncientBuildingScript.new()
+	building.name = _unique_child_name(batch, String(_descriptor.get("name", "AncientBuilding")))
+	building.assembly = assembly
+	building.position = Vector3.ZERO
+
+	if created_batch:
+		batch.add_child(building)
+		_commit_add_batch(scene_root, batch)
+	else:
+		_commit_add_building(batch, building, scene_root)
+	call_deferred("_select_exported", building)
+	_set_status("已导出到当前场景：%s（%d 实例 / %d Mesh，Ctrl+S 保存）" % [
+		assembly_path,
+		int(result.get("instances", 0)),
+		int(result.get("unique_meshes", 0)),
+	])
+
+
+func _selected_node() -> Node:
+	var selection = EditorInterface.get_selection()
+	if selection == null:
+		return null
+	var selected: Array = selection.get_selected_nodes()
+	if selected.size() != 1:
+		return null
+	return selected[0] as Node
+
+
+func _has_script(node: Node, script: Script) -> bool:
+	if node == null or script == null:
+		return false
+	var actual := node.get_script()
+	return actual == script or (actual != null and actual.resource_path == script.resource_path)
+
+
+func _resolve_export_batch(scene_root: Node, selected: Node) -> Node:
+	if selected != null:
+		var current := selected
+		while current != null:
+			if _has_script(current, AncientBuildingBatchScript):
+				return current
+			if current == scene_root:
+				break
+			current = current.get_parent()
+	if _has_script(scene_root, AncientBuildingBatchScript):
+		return scene_root
+	var batches: Array = []
+	_collect_batches(scene_root, batches)
+	return batches[0] if not batches.is_empty() else null
+
+
+func _collect_batches(node: Node, out: Array) -> void:
+	if _has_script(node, AncientBuildingBatchScript):
+		out.append(node)
+	for child in node.get_children():
+		_collect_batches(child, out)
+
+
+func _unique_child_name(parent: Node, base: String) -> String:
+	var candidate := base
+	var index := 2
+	while parent.get_node_or_null(NodePath(candidate)) != null:
+		candidate = "%s%d" % [base, index]
+		index += 1
+	return candidate
+
+
+func _commit_add_batch(scene_root: Node, batch: Node) -> void:
+	var undo = EditorInterface.get_editor_undo_redo()
+	if undo == null:
+		_attach_exported_batch(scene_root, batch, scene_root)
+		EditorInterface.mark_scene_as_unsaved()
+		return
+	undo.create_action("AncientBuilding: Export To Scene")
+	undo.add_do_method(self, "_attach_exported_batch", scene_root, batch, scene_root)
+	undo.add_undo_method(self, "_detach_exported_node", batch)
+	undo.add_do_reference(batch)
+	undo.commit_action()
+	EditorInterface.mark_scene_as_unsaved()
+
+
+func _commit_add_building(batch: Node, building: Node, scene_root: Node) -> void:
+	var undo = EditorInterface.get_editor_undo_redo()
+	if undo == null:
+		_attach_exported_building(batch, building, scene_root)
+		EditorInterface.mark_scene_as_unsaved()
+		return
+	undo.create_action("AncientBuilding: Export To Scene")
+	undo.add_do_method(self, "_attach_exported_building", batch, building, scene_root)
+	undo.add_undo_method(self, "_detach_exported_node", building)
+	undo.add_do_reference(building)
+	undo.commit_action()
+	EditorInterface.mark_scene_as_unsaved()
+
+
+func _commit_update_building(building: Node, assembly: Resource) -> void:
+	var previous = building.get("assembly")
+	var undo = EditorInterface.get_editor_undo_redo()
+	if undo == null:
+		building.set("assembly", assembly)
+		EditorInterface.mark_scene_as_unsaved()
+		return
+	undo.create_action("AncientBuilding: Update Assembly")
+	undo.add_do_property(building, "assembly", assembly)
+	undo.add_undo_property(building, "assembly", previous)
+	undo.commit_action()
+	EditorInterface.mark_scene_as_unsaved()
+
+
+func _attach_exported_batch(parent: Node, batch: Node, scene_root: Node) -> void:
+	parent.add_child(batch)
+	batch.owner = scene_root
+	for child in batch.get_children():
+		if _has_script(child, AncientBuildingScript):
+			child.owner = scene_root
+
+
+func _attach_exported_building(batch: Node, building: Node, scene_root: Node) -> void:
+	batch.add_child(building)
+	building.owner = scene_root
+
+
+func _detach_exported_node(node: Node) -> void:
+	var parent := node.get_parent()
+	if parent != null:
+		parent.remove_child(node)
+
+
+func _update_exported_building(building: Node, assembly: Resource) -> void:
+	_commit_update_building(building, assembly)
+
+
+func _select_exported(node: Node) -> void:
+	if node == null or not is_instance_valid(node):
+		return
+	var selection = EditorInterface.get_selection()
+	if selection == null:
+		return
+	selection.clear()
+	selection.add_node(node)
 
 
 func _convert_preview() -> void:

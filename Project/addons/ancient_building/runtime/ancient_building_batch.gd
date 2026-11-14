@@ -1,3 +1,4 @@
+@tool
 class_name AncientBuildingBatch
 extends Node3D
 ## 跨建筑 MultiMesh 批次：按 (chunk, mesh_key, material_profile, cast_shadow) 合并实例。
@@ -12,6 +13,11 @@ var _group_root: Node3D
 var _dirty := false
 var _rebuilding := false
 var _group_count := 0
+
+
+func _init() -> void:
+	# Moving the batch changes every building's global transform; rebuild is deferred.
+	set_notify_transform(true)
 
 
 func _ready() -> void:

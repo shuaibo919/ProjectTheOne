@@ -1,3 +1,4 @@
+@tool
 class_name BuildingAssembly
 extends Resource
 ## 一栋建筑烘焙后的不可变运行时数据（LOD0）。
