@@ -11,6 +11,11 @@ var generator_version := 1
 var _meshes: Dictionary = {}
 var _build_count := 0
 var _disk_hits := 0
+var recent_limit := 256
+var recent_bytes_limit := 128 * 1024 * 1024
+var _used: Dictionary = {}
+var _sizes: Dictionary = {}
+var _clock := 0
 
 
 func _init(p_disk_root: String = "", p_generator_version: int = 1) -> void:
@@ -20,6 +25,7 @@ func _init(p_disk_root: String = "", p_generator_version: int = 1) -> void:
 
 func get_mesh(key: String, module_id: String, params: Dictionary, dims: Dictionary = {}) -> Mesh:
 	if _meshes.has(key):
+		_touch(key)
 		return _meshes[key]
 
 	if not disk_root.is_empty():
@@ -29,14 +35,43 @@ func get_mesh(key: String, module_id: String, params: Dictionary, dims: Dictiona
 			if loaded is Mesh:
 				_meshes[key] = loaded
 				_disk_hits += 1
+				_touch(key)
 				return loaded
 
-	var mesh := ModuleMesh.build(module_id, params, dims)
-	_meshes[key] = mesh
-	_build_count += 1
+	var mesh := put_data(key, ModuleMesh.build_data(module_id, params, dims))
 	if not disk_root.is_empty():
 		_store(key, mesh)
 	return mesh
+
+
+func _touch(key: String) -> void:
+	_clock += 1
+	_used[key] = _clock
+
+
+func has_mesh(key: String) -> bool:
+	return _meshes.has(key)
+
+
+func peek(key: String) -> Mesh:
+	_touch(key)
+	return _meshes.get(key)
+
+
+func known_keys() -> Dictionary:
+	var result := {}
+	for key in _meshes:
+		result[key] = true
+	return result
+
+
+func put_data(key: String, data) -> Mesh:
+	if not _meshes.has(key):
+		_meshes[key] = data.to_mesh()
+		_sizes[key] = data.byte_size()
+		_build_count += 1
+	_touch(key)
+	return _meshes[key]
 
 
 func unique_count() -> int:
@@ -55,6 +90,8 @@ func clear() -> void:
 	_meshes.clear()
 	_build_count = 0
 	_disk_hits = 0
+	_used.clear()
+	_sizes.clear()
 
 
 func _disk_dir() -> String:
@@ -72,3 +109,25 @@ func _store(key: String, mesh: Mesh) -> void:
 	var error := ResourceSaver.save(mesh, _disk_path(key))
 	if error != OK:
 		push_warning("AncientBuilding: failed to cache mesh %s (%s)" % [key, error_string(error)])
+
+
+func retain_plan(instances: Array) -> void:
+	var active := {}
+	for instance in instances:
+		active[instance.key] = true
+	var recent: Array = []
+	var bytes := 0
+	for key in _meshes.keys():
+		if not active.has(key):
+			recent.append(key)
+			bytes += int(_sizes.get(key, 0))
+	recent.sort_custom(func(a, b): return int(_used.get(a, 0)) < int(_used.get(b, 0)))
+	var count := recent.size()
+	for key in recent:
+		if count <= recent_limit and bytes <= recent_bytes_limit:
+			break
+		bytes -= int(_sizes.get(key, 0))
+		count -= 1
+		_meshes.erase(key)
+		_used.erase(key)
+		_sizes.erase(key)

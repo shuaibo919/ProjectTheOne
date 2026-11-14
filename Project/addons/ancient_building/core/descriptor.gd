@@ -11,6 +11,8 @@ static func load_file(path: String) -> Dictionary:
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return {"error": "descriptor is not a JSON object: %s" % path}
 
+	if not parsed.get("mesh_overrides", {}) is Dictionary or not parsed.get("building", {}) is Dictionary or not parsed.get("modules", []) is Array:
+		return {"error": "expected building and mesh_overrides objects and modules array"}
 	var modules: Array = []
 	for entry in parsed.get("modules", []):
 		if typeof(entry) != TYPE_DICTIONARY:
@@ -21,6 +23,8 @@ static func load_file(path: String) -> Dictionary:
 		"name": String(parsed.get("name", "Building")),
 		"generator_version": int(parsed.get("generator_version", 1)),
 		"modules": modules,
+		"building": parsed.get("building", {}), "mesh_overrides": parsed.get("mesh_overrides", {}),
+		"surface": parsed.get("surface", {}),
 		"error": "",
 	}
 

@@ -1,5 +1,5 @@
 extends RefCounted
-## 宽度求解器（spec 008 §5.2）。
+## 宽度求解器（spec 008 §11.2）。
 ## S：阈值内单实例缩放；超阈值复制 n 份，每份缩放 s = W/(n·unit) ≤ MaxStretch。
 ## R：按单元数复制，实例不缩放（scale = 1），间距均分。
 ## A：刚体，恒 1 个实例。

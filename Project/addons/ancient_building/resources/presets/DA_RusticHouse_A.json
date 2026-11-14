@@ -1,0 +1,48 @@
+{
+  "name": "DA_RusticHouse_A",
+  "generator_version": 5,
+  "building": {
+    "usage": "house",
+    "bays": 3,
+    "bay_width": 2.2,
+    "depth": 3.8,
+    "storeys": 1,
+    "roof_form": "overhang",
+    "construction": "earth",
+    "roof_covering": "thatch",
+    "details": {
+      "facade_style": 1,
+      "side_windows": 0,
+      "porch_depth": 0.55,
+      "gable_finish": 1,
+      "window_backing": 0,
+      "lattice_style": 1,
+      "lattice_bars": 4,
+      "floor_height": 2.7,
+      "column_radius": 0.115,
+      "base_height": 0.25,
+      "roof_rise_ratio": 0.2,
+      "roof_curve": 0.18,
+      "ridge_ornament": 1,
+      "thatch_thickness": 0.3,
+      "thatch_raggedness": 0.95,
+      "thatch_bundle": 0.19,
+      "thatch_rods": 1,
+      "eave_depth": 0.55,
+      "platform_paving": 0,
+      "damage": 0.5,
+      "damage_wall": 0.9,
+      "damage_stone": 0.4,
+      "damage_roof": 0.3,
+      "damage_depth": 0.06,
+      "column_base": 2,
+      "bracket_style": 1
+    },
+    "variation": {
+      "seed": 73,
+      "amount": 0.15
+    },
+    "material_set": "M_AgedTimber"
+  },
+  "modules": []
+}

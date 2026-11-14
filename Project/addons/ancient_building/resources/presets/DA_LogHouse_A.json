@@ -1,0 +1,28 @@
+{
+  "name": "DA_LogHouse_A",
+  "generator_version": 4,
+  "building": {
+    "usage": "house",
+    "bays": 3,
+    "bay_width": 2.7,
+    "depth": 4.6,
+    "storeys": 1,
+    "roof_form": "overhang",
+    "material_set": "M_AgedTimber",
+    "construction": "log",
+    "roof_covering": "thatch",
+    "variation": {
+      "seed": 23,
+      "amount": 0.2
+    },
+    "details": {
+      "damage": 0.3,
+      "damage_density": 1,
+      "wall_thickness": 0.24,
+      "log_diameter": 0.24,
+      "hangings": 0,
+      "lanterns": 0
+    }
+  },
+  "modules": []
+}

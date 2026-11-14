@@ -5,7 +5,7 @@ extends RefCounted
 const Registry = preload("res://addons/ancient_building/core/module_registry.gd")
 
 
-static func make(module_id: String, params: Dictionary, material_set: String, lod: int, resolved_dims: Variant = null) -> String:
+static func make(module_id: String, params: Dictionary, material_set: String, lod: int, resolved_dims: Variant = null, mesh_path := "") -> String:
 	var meta := Registry.get_module(module_id)
 	if meta.is_empty():
 		push_error("AncientBuilding: unknown module id: %s" % module_id)
@@ -20,7 +20,9 @@ static func make(module_id: String, params: Dictionary, material_set: String, lo
 		"material_set": material_set,
 		"lod": lod,
 	}
-	if policy == "P":
+	if not mesh_path.is_empty():
+		payload["mesh_path"] = mesh_path
+	if policy == "P" or (resolved_dims is Dictionary and resolved_dims.has("geometry")):
 		payload["dims"] = resolved_dims if resolved_dims != null else {}
 
 	return ModuleKey.make_key(payload)

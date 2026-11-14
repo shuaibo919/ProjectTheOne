@@ -1,0 +1,17 @@
+{
+  "name": "DA_Shop_A",
+  "generator_version": 2,
+  "building": {
+    "usage": "shop",
+    "bays": 5,
+    "bay_width": 2.3,
+    "depth": 4.6,
+    "storeys": 1,
+    "roof_form": "overhang",
+    "material_set": "M_AgedTimber",
+    "style_profile": {
+      "building_tier": 0
+    }
+  },
+  "modules": []
+}

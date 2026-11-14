@@ -1,0 +1,17 @@
+{
+  "name": "DA_Hall_A",
+  "generator_version": 2,
+  "building": {
+    "usage": "hall",
+    "bays": 5,
+    "bay_width": 2.9,
+    "depth": 6.2,
+    "storeys": 2,
+    "roof_form": "gable_hip",
+    "material_set": "M_AgedTimber",
+    "style_profile": {
+      "building_tier": 0
+    }
+  },
+  "modules": []
+}

@@ -57,14 +57,9 @@ cd "$REPO"
 
 ## 验证
 
-```bash
-./Tools/Build/test-extension.sh   # 两个模块的类都应存在
-./test.sh                         # AncientBuilding 全量验收（M1-M5）
-```
+扩展冒烟与 AncientBuilding 检查按用户要求仅在本地 `Project/Tests/Temp/` 使用，不进入 Git；本版最终结果见 `Wiki/Temp/008-AncientBuilding.md` §14。
 
-冒烟输出 `SMOKE_OK: core=... / ancient_building=...` 表示两个独立扩展都加载成功。
-
-> 引擎从 `.godot/extension_list.cfg` 读取扩展列表，该文件由编辑器扫描生成。全新克隆必须先跑一次 `--headless --editor --quit`，`test-extension.sh` 已内置。
+引擎从 `.godot/extension_list.cfg` 读取扩展列表。首次打开本地编辑器会扫描并生成此文件；构建流程不依赖临时验证脚本。
 
 ## 引擎 API 与官方 4.7 的差异
 

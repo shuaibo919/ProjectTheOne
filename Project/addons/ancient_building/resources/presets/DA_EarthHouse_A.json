@@ -1,0 +1,32 @@
+{
+  "name": "DA_EarthHouse_A",
+  "generator_version": 4,
+  "building": {
+    "usage": "house",
+    "bays": 3,
+    "bay_width": 2.7,
+    "depth": 4.6,
+    "storeys": 1,
+    "roof_form": "overhang",
+    "material_set": "M_AgedTimber",
+    "construction": "earth",
+    "roof_covering": "thatch",
+    "variation": {
+      "seed": 11,
+      "amount": 0.35
+    },
+    "details": {
+      "damage": 0.45,
+      "damage_wood": 0.3,
+      "damage_roof": 0.3,
+      "damage_stone": 0.3,
+      "damage_density": 1,
+      "damage_depth": 0.12,
+      "eave_depth": 0.85,
+      "wall_thickness": 0.42,
+      "hangings": 0,
+      "lanterns": 0
+    }
+  },
+  "modules": []
+}

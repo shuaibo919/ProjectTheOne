@@ -1,0 +1,17 @@
+{
+  "name": "DA_Gate_A",
+  "generator_version": 2,
+  "building": {
+    "usage": "gate",
+    "bays": 1,
+    "bay_width": 3.1,
+    "depth": 3,
+    "storeys": 1,
+    "roof_form": "overhang",
+    "material_set": "M_RedLacquer",
+    "style_profile": {
+      "building_tier": 0
+    }
+  },
+  "modules": []
+}

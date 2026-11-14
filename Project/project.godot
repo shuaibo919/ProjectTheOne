@@ -13,6 +13,11 @@ config_version=5
 config/name="TheOne"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/ancient_building/plugin.cfg")
+
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+limits/global_shader_variables/buffer_size=262144

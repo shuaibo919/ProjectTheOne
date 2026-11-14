@@ -1,0 +1,80 @@
+{
+  "name": "DA_Compound_A",
+  "generator_version": 4,
+  "building": {
+    "mode": "compound",
+    "construction": "timber",
+    "roof_covering": "tile",
+    "details": {
+      "eave_depth": 0.65,
+      "base_height": 0.45,
+      "column_radius": 0.16
+    },
+    "plan": {
+      "nodes": [
+        {
+          "id": "N1",
+          "position": [
+            -9,
+            0
+          ]
+        },
+        {
+          "id": "N2",
+          "position": [
+            -3,
+            0
+          ]
+        },
+        {
+          "id": "N3",
+          "position": [
+            3,
+            0
+          ]
+        },
+        {
+          "id": "N4",
+          "position": [
+            9,
+            -4
+          ]
+        }
+      ],
+      "segments": [
+        {
+          "id": "S1",
+          "a": "N1",
+          "b": "N2",
+          "width": 4,
+          "storeys": 1,
+          "floor_height": 3,
+          "construction": "earth",
+          "roof_covering": "thatch"
+        },
+        {
+          "id": "S2",
+          "a": "N2",
+          "b": "N3",
+          "width": 4,
+          "storeys": 2,
+          "floor_height": 3,
+          "construction": "timber",
+          "roof_covering": "tile"
+        },
+        {
+          "id": "S3",
+          "a": "N3",
+          "b": "N4",
+          "width": 3,
+          "storeys": 1,
+          "floor_height": 3,
+          "construction": "timber",
+          "roof_covering": "tile",
+          "open_sides": true
+        }
+      ]
+    }
+  },
+  "modules": []
+}

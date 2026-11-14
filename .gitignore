@@ -4,6 +4,9 @@ Project/.validation/
 Project/export/
 Project/build/
 Project/Generated/
+# Validation scripts are local working files, not delivery sources.
+/Project/Tests/Temp/*
+!/Project/Tests/Temp/.gdignore
 
 # ---- Native / engine build outputs ----
 Source/build_api/
@@ -36,3 +39,7 @@ Desktop.ini
 *.user
 *.tmp
 ~*
+# ---- Miscellaneous ----
+AGENTS.md
+CLAUDE.md
+Reference/

@@ -1,0 +1,42 @@
+{
+  "name": "DA_Pagoda_A",
+  "generator_version": 5,
+  "building": {
+    "mode": "tower",
+    "usage": "hall",
+    "sides": 8,
+    "radius": 5.4,
+    "storeys": 5,
+    "setback": 0.3,
+    "construction": "timber",
+    "details": {
+      "floor_height": 2.7,
+      "column_radius": 0.15,
+      "base_height": 0.45,
+      "roof_rise_ratio": 0.32,
+      "roof_curve": 0.72,
+      "corner_lift": 0.38,
+      "eave_depth": 1.15,
+      "tile_pitch": 0.24,
+      "balcony_depth": 0.7,
+      "railing_style": 2,
+      "railing_height": 0.72,
+      "bracket_spacing": 1.1,
+      "finial_height": 2.5,
+      "roof_palette": 1,
+      "window_backing": 1,
+      "lattice_style": 3,
+      "lattice_bars": 4,
+      "platform_paving": 1,
+      "damage": 0.05,
+      "damage_depth": 0.015,
+      "column_base": 1
+    },
+    "variation": {
+      "seed": 73,
+      "amount": 0.15
+    },
+    "material_set": "M_AgedTimber"
+  },
+  "modules": []
+}

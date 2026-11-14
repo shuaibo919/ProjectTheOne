@@ -1,18 +1,17 @@
 {
   "name": "DA_House_A",
-  "generator_version": 1,
-  "modules": [
-    { "id": "B01", "width": 4.0, "params": { "height": 0.45, "depth": 5.0 }, "position": [0, 0, 0] },
-    { "id": "F01", "params": { "radius": 0.12, "height": 3.0, "sides": 12 }, "position": [-1.5, 0.45, -1.5] },
-    { "id": "F01", "params": { "radius": 0.12, "height": 3.0, "sides": 12 }, "position": [1.5, 0.45, -1.5] },
-    { "id": "F01", "params": { "radius": 0.12, "height": 3.0, "sides": 12 }, "position": [-1.5, 0.45, 1.5] },
-    { "id": "F01", "params": { "radius": 0.12, "height": 3.0, "sides": 12 }, "position": [1.5, 0.45, 1.5] },
-    { "id": "W01", "width": 4.0, "params": { "thickness": 0.2, "height": 2.6 }, "position": [0, 0.45, -1.5] },
-    { "id": "F11", "width": 4.0, "params": { "radius": 0.06, "length": 1.2, "sides": 8 }, "position": [0, 3.2, 2.0] },
-    { "id": "R01", "width": 4.0, "params": { "depth": 5.0, "rise": 1.4, "overhang": 0.4 }, "position": [0, 3.45, 0] },
-    { "id": "R03", "width": 4.0, "params": { "radius": 0.08, "length": 2.6, "sides": 8 }, "position": [0, 3.6, 1.5] },
-    { "id": "R06", "width": 4.0, "params": { "height": 0.35, "thickness": 0.3, "overhang": 0.4 }, "position": [0, 4.85, 0] },
-    { "id": "R12", "params": { "height": 0.4, "width": 0.2, "depth": 0.18 }, "position": [2.0, 3.7, 1.2] },
-    { "id": "R11", "params": { "height": 0.6, "width": 0.3, "depth": 0.25 }, "position": [2.2, 4.9, 0] }
-  ]
+  "generator_version": 2,
+  "building": {
+    "usage": "house",
+    "bays": 3,
+    "bay_width": 2.25,
+    "depth": 4.2,
+    "storeys": 1,
+    "roof_form": "flush",
+    "material_set": "M_AgedTimber",
+    "style_profile": {
+      "building_tier": 0
+    }
+  },
+  "modules": []
 }
