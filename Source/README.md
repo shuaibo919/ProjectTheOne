@@ -17,7 +17,7 @@
 
 | 组件 | 版本 |
 | --- | --- |
-| `Engine` | Godot 4.7 beta 自定义 fork，提交 `3bfa50fd`，本地编译 |
+| `Engine` | Godot 4.7 beta 自定义 fork，基线见父仓库锁定的子模块 SHA。TheOne 构建脚本开启 `with_hj_game=yes` |
 | `EngineAdaptor` | godot-cpp `master`，提交 `e103d34` |
 | 目标 API | `4.7`（默认用引擎 dump 的 `Source/build_api/extension_api.json`，缺失时回退 godot-cpp 的 4.7 快照） |
 | 构建 Python | 3.13.13（uv 托管，`.python-version`） |
@@ -35,7 +35,7 @@
 
 ```bash
 cd Engine
-"$REPO/.venv/Scripts/python.exe" -m SCons platform=windows target=editor arch=x86_64 angle=no -j16
+"$REPO/.venv/Scripts/python.exe" -m SCons platform=windows target=editor arch=x86_64 angle=no with_hj_game=yes -j16
 
 cd "$REPO"
 "$REPO/.venv/Scripts/python.exe" -m SCons platform=windows target=template_debug -j8
@@ -61,14 +61,13 @@ cd "$REPO"
 
 引擎从 `.godot/extension_list.cfg` 读取扩展列表。首次打开本地编辑器会扫描并生成此文件；构建流程不依赖临时验证脚本。
 
-## 引擎 API 与官方 4.7 的差异
+## TheOne 引擎 API
 
-| 来源 | 体积 | 版本串 |
-| --- | ---: | --- |
-| 引擎 dump（`Source/build_api/`） | 6,963,881 B | `4.7.0 beta custom_build` |
-| godot-cpp `extension_api-4-7.json` | 6,965,055 B | `4.7.0 stable official` |
+`with_hj_game=yes` 定义 `WITH_HJ_GAME`，向 `CompositorEffect` 增加 `needs_outline_data`，并开放 `RenderingServer.COMPOSITOR_EFFECT_FLAG_NEEDS_OUTLINE_DATA`。可向构建脚本传 `with_hj_game=no` 关闭扩展。编译模板与编辑器时应使用相同开关。
 
-差约 1.2 KB，说明 fork 未改动 GDExtension 暴露面。`Source/build_api/` 已忽略，可按下述命令确定性重建（需先编译引擎）：
+在 Forward+ 中，启用该请求的视口将不透明材质的 `OUTLINE_DATA = vec2(float(region_id) / 255.0, weight)` 写入线性 RG8。区域编号取 1–255，默认值和背景均为零。后处理在不透明绘制结束后可用 `get_texture("forward_clustered", "outline_data")` 取得本视口的解析纹理。用最近点采样或 `texelFetch` 读取离散编号。
+
+启用扩展的编辑器有额外的类方法和枚举。原生绑定使用匹配的本地 API dump。`Source/build_api/` 已忽略，编译相应的引擎后运行：
 
 ```bash
 cd Source/build_api

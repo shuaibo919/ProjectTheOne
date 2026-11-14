@@ -20,7 +20,7 @@ export TEMP="$TMP"
 
 cd "$REPO/Engine"
 echo "Building Engine: windows / editor / x86_64, -j$JOBS (angle disabled)"
-"$PY" -m SCons platform=windows target=editor arch=x86_64 angle=no -j"$JOBS" "$@"
+"$PY" -m SCons platform=windows target=editor arch=x86_64 angle=no with_hj_game=yes -j"$JOBS" "$@"
 
 echo
 echo "Engine binary: $REPO/Engine/bin/godot.windows.editor.x86_64.exe"
