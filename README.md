@@ -1,22 +1,12 @@
 ## Project: The One
 
-水墨风武侠 ARPG。Godot 4.7 自定义 fork + C++ GDExtension，全部源码本地构建。
+Project: The one
 
-## 快速开始（Git Bash）
+Godot 4.7 Cuustom fork and C++ GDExtension
 
-```bash
-./Tools/Build/setup-env.sh   # 首次：uv sync（Python 3.13.13 + SCons 4.11.1）
-./build.sh                   # 编译引擎（首次 10–20 分钟）+ 原生扩展
-./edit.sh                    # 用本地引擎打开 Project/
-```
+Docs all in [Wiki: The One](https://github.com/shuaibo919/ProjectAbyssWiki/tree/theone)(private for now)
 
-| 快捷方式 | 等价 |
-| --- | --- |
-| `./build.sh` | `Tools/Build/build-all.sh` |
-| `./edit.sh` | `Tools/Build/launch-editor.sh` |
 
-产物：`Engine/bin/godot.windows.editor.x86_64.exe`；扩展按模块拆分为 `Project/bin/theone_core...dll` 与 `Project/bin/ancient_building...dll`。
+### ShowCase
 
-规范与计划：[Wiki/Spec/001-Overview.md](Wiki/Spec/001-Overview.md)、[Wiki/Temp/008-AncientBuilding.md](Wiki/Temp/008-AncientBuilding.md)。
-
-验证脚本仅在本地 `Project/Tests/Temp/` 临时使用并由 Git 忽略；本版验收结果见古建草案 §14。
+Vedio Link: todo
