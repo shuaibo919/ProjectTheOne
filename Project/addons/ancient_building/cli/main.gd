@@ -1,7 +1,8 @@
 extends SceneTree
 ## AncientBuilding CLI（headless）。
 ## 语义：validate 只校验；build 构建到内存不保存；stats 输出实例/网格/三角面；
-## bake 构建并保存；params 生成参数参考；convert/revert/inspect 处理已烘焙场景。
+## assembly 烘焙 BuildingAssembly；bake 构建并保存；params 生成参数参考；
+## convert/revert/inspect 处理已烘焙场景。
 ## 退出码：0 成功；1 描述/参数校验失败；2 构建/保存/用法错误。
 
 const Registry := preload("res://addons/ancient_building/core/module_registry.gd")
@@ -12,6 +13,7 @@ const Assembler := preload("res://addons/ancient_building/core/assembler.gd")
 const Batcher := preload("res://addons/ancient_building/core/scene_batcher.gd")
 const Variation := preload("res://addons/ancient_building/core/building_variation.gd")
 const ModuleMesh := preload("res://addons/ancient_building/core/module_mesh.gd")
+const AssemblyBaker := preload("res://addons/ancient_building/core/assembly_baker.gd")
 
 const CACHE_ROOT := "res://Generated/AncientBuilding"
 const EXIT_OK := 0
@@ -41,6 +43,8 @@ func _initialize() -> void:
 			_cmd_stats(options)
 		"params":
 			_cmd_params(options)
+		"assembly":
+			_cmd_assembly(options)
 		"bake":
 			_cmd_bake(options)
 		"convert":
@@ -200,6 +204,22 @@ func _cmd_params(options: Dictionary) -> void:
 	if not _write_text(out_path, text):
 		return
 	_emit({"path": out_path, "format": format, "bytes": text.to_utf8_buffer().size()})
+	quit(EXIT_OK)
+
+
+func _cmd_assembly(options: Dictionary) -> void:
+	var path := String(options.get("file", ""))
+	var descriptor := _read_descriptor(options)
+	if descriptor.is_empty():
+		return
+	var result := AssemblyBaker.bake(descriptor, {
+		"out": String(options.get("out", "")),
+		"source_path": path,
+	})
+	if result.has("error"):
+		_fail(String(result["error"]), int(result.get("exit", EXIT_VALIDATION)))
+		return
+	_emit(result)
 	quit(EXIT_OK)
 
 
@@ -580,6 +600,7 @@ func _print_usage() -> void:
 	print("  build --file <descriptor.json>      构建到内存，不保存场景")
 	print("  stats --file <descriptor.json>      实例/唯一网格/三角面/策略统计")
 	print("  params [--format md|json] [--out <path>]  生成参数参考")
+	print("  assembly --file <descriptor.json> [--out <assembly.tres>]  烘焙 BuildingAssembly")
 	print("  bake --file <descriptor.json> [--out <scene.tscn>]")
 	print("  convert --scene <scene.tscn>")
 	print("  revert --scene <scene.tscn>")

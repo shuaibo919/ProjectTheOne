@@ -10,6 +10,7 @@ const Params := preload("res://addons/ancient_building/core/module_params.gd")
 const Assembler := preload("res://addons/ancient_building/core/assembler.gd")
 const Materials := preload("res://addons/ancient_building/core/material_library.gd")
 const Batcher := preload("res://addons/ancient_building/core/scene_batcher.gd")
+const AssemblyBaker := preload("res://addons/ancient_building/core/assembly_baker.gd")
 const Preview := preload("res://addons/ancient_building/core/preview_builder.gd")
 const ModuleMesh := preload("res://addons/ancient_building/core/module_mesh.gd")
 const Variation := preload("res://addons/ancient_building/core/building_variation.gd")
@@ -113,6 +114,7 @@ func _build_ui() -> void:
 	root.add_child(actions)
 	actions.add_child(_make_button("构建预览", _rebuild_preview))
 	actions.add_child(_make_button("烘焙场景", _bake_scene))
+	actions.add_child(_make_button("烘焙装配体", _bake_assembly))
 	actions.add_child(_make_button("Convert", _convert_preview))
 	actions.add_child(_make_button("Revert", _rebuild_preview))
 	actions.add_child(_make_button("Stats", _update_stats))
@@ -668,6 +670,8 @@ func _process(_delta: float) -> void:
 		_pending_action = ""
 		if action == "bake":
 			_bake_scene()
+		elif action == "assembly":
+			_bake_assembly()
 		elif action == "convert":
 			_convert_preview()
 	_main_slice_peak_ms = maxf(_main_slice_peak_ms, (Time.get_ticks_usec() - started) / 1000.0)
@@ -842,6 +846,20 @@ func _bake_scene() -> void:
 		_set_status("保存失败: " + error_string(save_error))
 		return
 	_set_status("已烘焙: " + path)
+
+
+func _bake_assembly() -> void:
+	if not _ready_for_action("assembly"):
+		return
+	var result := AssemblyBaker.bake(_descriptor.duplicate(true), {"source_path": _preset_file})
+	if result.has("error"):
+		_set_status("装配体失败: " + String(result["error"]))
+		return
+	_set_status("已烘焙装配体: %s（%d 实例 / %d Mesh）" % [
+		String(result.get("assembly", "")),
+		int(result.get("instances", 0)),
+		int(result.get("unique_meshes", 0)),
+	])
 
 
 func _convert_preview() -> void:

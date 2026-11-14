@@ -132,6 +132,17 @@ def report(project: Path, root: Path, current: int) -> dict:
             except OSError:
                 size = 0
             samples.append({"name": child.name, "bytes": size})
+    assembly_root = root / "Assemblies"
+    assemblies: list[dict] = []
+    if assembly_root.is_dir():
+        for child in sorted(assembly_root.glob("*.tres")):
+            try:
+                size = child.stat().st_size
+            except OSError:
+                size = 0
+            assemblies.append({"name": child.name, "bytes": size})
+    assembly_files = len(assemblies)
+    assembly_bytes = sum(a["bytes"] for a in assemblies)
     mesh_files = sum(v["files"] for v in versions)
     mesh_bytes = sum(v["bytes"] for v in versions)
     material_files = sum(m["files"] for m in materials)
@@ -167,6 +178,11 @@ def report(project: Path, root: Path, current: int) -> dict:
             "items": samples,
             "non_preset": [s["name"] for s in samples if not s["name"].startswith("DA_")],
         },
+        "assemblies": {
+            "files": assembly_files,
+            "bytes": assembly_bytes,
+            "items": assemblies,
+        },
     }
 
 
@@ -185,6 +201,7 @@ def markdown(data: dict) -> str:
     lines.append(f"| Mesh 缓存 | {data['meshes']['files']} | {human_bytes(data['meshes']['bytes'])} |")
     lines.append(f"| 材料纹理 | {data['materials']['files']} | {human_bytes(data['materials']['bytes'])} |")
     lines.append(f"| Samples | {data['samples']['files']} | {human_bytes(data['samples']['bytes'])} |")
+    lines.append(f"| Assemblies | {data['assemblies']['files']} | {human_bytes(data['assemblies']['bytes'])} |")
     lines.append("")
     lines.append("## Mesh 缓存版本")
     lines.append("")
@@ -226,6 +243,15 @@ def markdown(data: dict) -> str:
         lines.append("")
         lines.append("非预设命名的 Sample：" + "、".join(f"`{n}`" for n in data["samples"]["non_preset"]))
     lines.append("")
+    lines.append("## Assemblies")
+    lines.append("")
+    if data["assemblies"]["items"]:
+        for item in data["assemblies"]["items"]:
+            lines.append(f"- `{item['name']}` — {human_bytes(item['bytes'])}")
+    else:
+        lines.append("（没有 assembly）")
+    lines.append("")
+    lines.append("Assemblies 是被 `AncientBuilding` 节点或场景引用的构建产物，工具不自动删除；重建见 `assembly` 命令。")
     lines.append("## 引用扫描")
     lines.append("")
     if data["scenes_with_references"]:
@@ -274,8 +300,10 @@ def write_manifest(root: Path, data: dict) -> None:
             "dirs": data["materials"]["dirs"],
         },
         "samples": data["samples"],
+        "assemblies": data["assemblies"],
         "rebuild": [
             ".venv/Scripts/python.exe Tools/AncientBuilding/build_materials.py --engine Engine/bin/godot.windows.editor.x86_64.console.exe",
+            "Engine/bin/godot.windows.editor.x86_64.console.exe --headless --path Project --script res://addons/ancient_building/cli/main.gd -- assembly --file <preset.json>",
             "Engine/bin/godot.windows.editor.x86_64.console.exe --headless --path Project --script res://addons/ancient_building/cli/main.gd -- bake --file <preset.json> --out <scene.tscn>",
             ".venv/Scripts/python.exe Tools/AncientBuilding/cache_report.py --manifest",
         ],
@@ -291,11 +319,12 @@ def write_manifest(root: Path, data: dict) -> None:
         "",
         "重建顺序：",
         "1. 材质：`.venv/Scripts/python.exe Tools/AncientBuilding/build_materials.py --engine <godot console>`",
-        "2. 烘焙预设：用 CLI `bake` 逐个生成 `Samples/*.tscn`",
-        "3. 盘点/清理：`.venv/Scripts/python.exe Tools/AncientBuilding/cache_report.py --prune --yes --manifest`",
+        "2. 装配体：CLI `assembly --file <preset.json>` 生成 `Assemblies/*.tres`（运行时节点用）",
+        "3. 旧式场景（可选）：CLI `bake --file <preset.json>` 生成 `Samples/*.tscn`",
+        "4. 盘点/清理：`.venv/Scripts/python.exe Tools/AncientBuilding/cache_report.py --prune --yes --manifest`",
         "",
         "不要删除当前版本 `Meshes/v" + str(data["generator_version"]) + "/`；",
-        "它是已烘焙场景的外部引用。旧版本先看 `cache_report.py` 的扫描结果再清理。",
+        "它是已烘焙场景/装配体的外部引用。旧版本先看 `cache_report.py` 的扫描结果再清理。",
         "",
         "详见 `Wiki/Temp/008-AncientBuilding.md` §13.5。",
         "",

@@ -14,7 +14,7 @@
 | 脚本 | 作用 |
 | --- | --- |
 | `build_materials.py` | 生成八族 BC/N/ORM 纹理并更新材质索引 |
-| `cache_report.py` | 扫描 `Project/Generated/AncientBuilding` 的版本/体积/场景引用；`--prune --yes --manifest` 只清理旧且未引用缓存，并写 `manifest.json` / `README.md` |
+| `cache_report.py` | 扫描 `Project/Generated/AncientBuilding` 的版本/体积/场景引用（含 Assemblies）；`--prune --yes --manifest` 只清理旧且未引用缓存，并写 `manifest.json` / `README.md` |
 | `generate_param_reference.sh` | 调 CLI `params` 重新生成 `Project/addons/ancient_building/PARAMETERS.md`；Git Bash 运行 |
 
 两者都不依赖游戏运行时；使用仓库 `.venv`。缓存清理永远保留当前 `generator_version` 与任何被 `.tscn`/`.tres` 引用的版本，不接受“先删后修”。完整重建顺序见 `Wiki/Temp/008-AncientBuilding.md` §13.5。

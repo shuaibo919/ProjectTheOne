@@ -1,6 +1,6 @@
 # AncientBuilding
 
-在仓库根目录用 Git Bash 运行 `./edit.sh`，打开编辑器的 **AncientBuilding** 面板。本轮街屋参考选 **DA_RiversideShop_A / DA_RiversideHouse_A / DA_RiversideHall_A**，分别展示席棚店铺、板棚民居、花脊楼阁；此前的参考楼阁、灰墙民居、茅屋、塔仍见下表。十五个样例均可在面板载入对应预设并烘焙；也可用下文生产 CLI 的 `bake` 命令。已有烘焙场景可在 3D 视口选择单个构件。更新后重启编辑器，旧场景须重新烘焙。
+在仓库根目录用 Git Bash 运行 `./edit.sh`，打开编辑器的 **AncientBuilding** 面板。本轮街屋参考选 **DA_RiversideShop_A / DA_RiversideHouse_A / DA_RiversideHall_A**，分别展示席棚店铺、板棚民居、花脊楼阁；此前的参考楼阁、灰墙民居、茅屋、塔仍见下表。十五个样例均可在面板载入对应预设并烘焙；也可用下文生产 CLI 的 `bake` 命令。已有烘焙场景可在 3D 视口选择单个构件。更新后重启编辑器，旧场景须重新烘焙。运行时装配体见下文 **运行时节点**：先烘焙 `.tres`，再由 `AncientBuilding`/`AncientBuildingBatch` 引用。
 
 ## 预设
 
@@ -160,6 +160,7 @@ HALL=res://addons/ancient_building/resources/presets/DA_Hall_A.json
 "$ENGINE" --headless --path Project --script "$CLI" -- build --file "$HALL"
 "$ENGINE" --headless --path Project --script "$CLI" -- stats --file "$HALL"
 "$ENGINE" --headless --path Project --script "$CLI" -- params --out res://addons/ancient_building/PARAMETERS.md
+"$ENGINE" --headless --path Project --script "$CLI" -- assembly --file "$HALL"
 "$ENGINE" --headless --path Project --script "$CLI" -- bake --file "$HALL"
 ```
 
@@ -169,10 +170,26 @@ HALL=res://addons/ancient_building/resources/presets/DA_Hall_A.json
 - `build`：构建到内存，不保存场景；会按需写当前版本 Mesh 缓存。
 - `stats`：实例、唯一网格、三角面、去重率与按策略统计；不写磁盘缓存。
 - `params`：由 `module_catalog.json` 与 `building_variation.gd` 实时生成 [PARAMETERS.md](PARAMETERS.md)；不要手改生成文件。也可用 `bash Tools/AncientBuilding/generate_param_reference.sh` 一步重跑。
-- `bake`：构建并保存；`convert` / `revert` / `inspect` 处理已烘焙场景。
+- `assembly`：烘焙 `BuildingAssembly` `.tres` 到 `Generated/AncientBuilding/Assemblies/`，并更新 `manifest.json`；占位模块/缺失外部 Mesh 直接报错。
+- `bake`：构建并保存旧式逐节点场景；`convert` / `revert` / `inspect` 处理已烘焙场景。
 - 退出码：0 成功、1 描述/参数校验失败、2 构建/保存/用法错误。
 
-构件缓存使用 `Generated/AncientBuilding/Meshes/v14/`，被烘焙场景外部引用。盘点与清理用 `.venv/Scripts/python.exe Tools/AncientBuilding/cache_report.py --format md`，确认后再 `--prune --yes --manifest`；它只删旧且未被引用的版本。完整重建顺序见 `Wiki/Temp/008-AncientBuilding.md` §13.5。其他命令有 `list-modules`、`describe --id`、`inspect --scene`。
+构件缓存使用 `Generated/AncientBuilding/Meshes/v14/`，被烘焙场景和 assembly 外部引用。盘点与清理用 `.venv/Scripts/python.exe Tools/AncientBuilding/cache_report.py --format md`，确认后再 `--prune --yes --manifest`；它只删旧且未被引用的版本。完整重建顺序见 `Wiki/Temp/008-AncientBuilding.md` §13.5。其他命令有 `list-modules`、`describe --id`、`inspect --scene`。
+
+## 运行时节点
+
+```text
+AncientBuildingBatch  (chunk_size)
+├─ AncientBuilding    (assembly = Assemblies/*.tres, seed_salt, cast_shadow)
+└─ AncientBuilding
+```
+
+- `AncientBuilding` 直接引用 assembly；没有祖先 batch 时在自己本地生成 MultiMesh 组，便于单栋/编辑器使用。
+- `AncientBuildingBatch` 按 `(chunk, mesh_key, material_profile, cast_shadow)` 跨建筑合并，Mesh 与材质 profile 共享；当前固定 LOD0。
+- Dock 的 **烘焙装配体** 与 CLI `assembly` 使用同一个 `AssemblyBaker`；默认输出 `Generated/AncientBuilding/Assemblies/`。
+- 新增/删除/移动/改 assembly 时整批重建；这是 P3 的正确性优先实现，逐建筑增量索引后续再做。
+- assembly `.tres` 保留完整 `source_descriptor`，可在编辑器中重建；打包阶段可批量转 `.res`。
+- 当前没有 LOD、碰撞/导航；`bake` 的旧式场景与 `Convert` 仍然独立可用。
 
 v8 修复此前遗漏的檐口跨构件共面：滴水与封檐板的正面原本同在 54 mm 处，现在封檐板前面收至 8 mm；瓦当按圆盘背面定位，与滴水完整浮雕保留约 9 mm 净距，并以半筒背接瓦垄。曲檐封檐板沿真实檐线生成，邻段留缝、角部斜接，不再加长盒体相互覆盖。带背接的瓦当在破损时保留接触边界。R05 手动参数新增 `neck_length` / `neck_radius`，默认 0 兼容独立单件。
 
